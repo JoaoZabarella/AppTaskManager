@@ -3,6 +3,7 @@ package com.example.taskmanager.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -19,22 +20,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "Usuario")
-@Table(name = "usuario")
+@Table(name = "usuarios")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "O nome não pode estar em branco")
+    @NotBlank(message = "O nome não pode estar em branco")
     private String nome;
 
-    @NotNull(message = "O campo email não pode estar em branco")
+    @NotBlank(message = "O campo email não pode estar em branco")
     @Email(message = "O email deve ser válido")
     @Column(unique = true)
     private String email;
 
-    @NotNull
+    @NotBlank
     @Size(min = 6, max = 255, message = "A senha deve ter no minimo 6 digitos")
     private String senha;
 
@@ -42,6 +43,7 @@ public class Usuario {
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean ativo = true;
 
 

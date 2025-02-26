@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "Tarefa")
-@Table(name = "tarefa")
+@Table(name = "tarefas")
 public class Tarefa {
 
     @Id
@@ -60,6 +60,8 @@ public class Tarefa {
     @OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comentario> comentarios;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean ativo = true;
 
 
 }

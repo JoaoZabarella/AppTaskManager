@@ -1,0 +1,7 @@
+CREATE TABLE categoria(
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    usuario_id BIGINT NOT NULL,
+    ativo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
