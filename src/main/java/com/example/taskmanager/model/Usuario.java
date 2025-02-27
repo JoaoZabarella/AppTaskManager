@@ -46,6 +46,8 @@ public class Usuario {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean ativo = true;
 
-
-
+    //Lomboock não reconheceu o getNome
+    public @NotBlank(message = "O nome não pode estar em branco") String getNome() {
+        return nome;
+    }
 }
