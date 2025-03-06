@@ -1,17 +1,14 @@
 package com.example.taskmanager.model;
 
 
+import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.boot.BootLogging;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -21,33 +18,69 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity(name = "Usuario")
 @Table(name = "usuarios")
+@EqualsAndHashCode(of = "id")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "O nome não pode estar em branco")
     private String nome;
 
-    @NotBlank(message = "O campo email não pode estar em branco")
-    @Email(message = "O email deve ser válido")
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @NotBlank
-    @Size(min = 6, max = 255, message = "A senha deve ter no minimo 6 digitos")
     private String senha;
 
     @CreationTimestamp
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private Boolean ativo = true;
+    @Column(name = "ativo", nullable = false )
+    private boolean ativo = true;
+
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
 
     //Lomboock não reconheceu o getNome
-    public @NotBlank(message = "O nome não pode estar em branco") String getNome() {
-        return nome;
+
+
+    public Usuario(DadosCadastroUsuario dados, PasswordEncoder passwordEncoder) {
+        this.nome = dados.nome();
+        this.email = dados.email();
+        this.senha = passwordEncoder.encode(dados.senha());
+    }
+    public void desativar (){
+        this.ativo = false;
+    }
+
+    public Usuario() {
     }
 }

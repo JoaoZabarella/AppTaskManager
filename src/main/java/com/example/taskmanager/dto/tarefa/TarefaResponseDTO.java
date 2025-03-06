@@ -1,6 +1,5 @@
 package com.example.taskmanager.dto.tarefa;
 
-import com.example.taskmanager.dto.categoria.CategoriaResponseDTO;
 import com.example.taskmanager.dto.comentario.ComentarioResponseDTO;
 import com.example.taskmanager.model.*;
 

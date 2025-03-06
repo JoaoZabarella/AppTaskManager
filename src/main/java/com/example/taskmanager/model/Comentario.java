@@ -35,5 +35,19 @@ public class Comentario {
     private Boolean ativo = true;
 
 
+    public Long getId() {
+        return id;
+    }
 
+    public String getTexto() {
+        return texto;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
 }

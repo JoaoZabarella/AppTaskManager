@@ -19,4 +19,12 @@ public class Prioridade {
     private Long id;
     private String texto;
 
+
+    public String getTexto() {
+        return texto;
+    }
+
+    public Long getId() {
+        return id;
+    }
 }

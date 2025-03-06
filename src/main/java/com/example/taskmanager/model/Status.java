@@ -19,5 +19,12 @@ public class Status {
     private String texto;
 
 
+    public Long getId() {
+        return id;
+    }
 
+    public String getTexto() {
+        return texto;
+
+    }
 }

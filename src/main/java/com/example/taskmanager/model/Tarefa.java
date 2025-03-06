@@ -64,4 +64,45 @@ public class Tarefa {
     private Boolean ativo = true;
 
 
+    public Long getId() {
+        return id;
+    }
+
+    public @NotNull(message = "O titulo não pode estar em branco") @Size(max = 100, message = "O titulo deve ter no máximo 100 caractéres") String getTitulo() {
+        return titulo;
+    }
+
+    public @Size(max = 500, message = "A descricao não pode exceder 500 caracteres") String getDescricao() {
+        return descricao;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public Prioridade getPrioridade() {
+        return prioridade;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public LocalDateTime getDataConclusao() {
+        return dataConclusao;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public List<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+
 }

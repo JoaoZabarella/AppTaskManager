@@ -29,6 +29,12 @@ public class Categoria {
     @OneToMany(mappedBy = "categoria")
     private List<Tarefa> tarefas;
 
-
-
+    //Lomboock não reconhece o getNome
+    public String getNome() {
+        return nome;
+    }
+    //Lomboock não reconhece o getId
+    public Long getId() {
+        return id;
+    }
 }
