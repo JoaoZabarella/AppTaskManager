@@ -6,7 +6,6 @@ import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.service.UsuarioService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -29,10 +28,7 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<DadosListagemUsuarioDTO> cadastrar(@Valid @RequestBody DadosCadastroUsuario dadosCadastro, UriComponentsBuilder uriBuilder){
-        var user = usuarioService.cadastraUsuario(dadosCadastro, uriBuilder);
-
-        var uri = uriBuilder.path("/usuario/{id}").buildAndExpand(user.id()).toUri();
-        return ResponseEntity.created(uri).body(user);
+        return usuarioService.cadastraUsuario(dadosCadastro, uriBuilder);
     }
 
     @GetMapping
@@ -60,15 +56,14 @@ public class UsuarioController {
     }
 
 
-    @GetMapping("/filtrados")
-    public ResponseEntity<Page<DadosListagemUsuarioDTO>> listarUsuarios(
+    @GetMapping("/buscar")
+    public ResponseEntity<DadosListagemUsuarioDTO> listarUsuarios(
         @RequestParam(required = false) Long id,
         @RequestParam(required = false) String nome,
-        @RequestParam(required = false) String email,
-        Pageable pageable
+        @RequestParam(required = false) String email
         ) {
-        Page<DadosListagemUsuarioDTO> usuarios = usuarioService.listarTodosUsuarios(id, nome, email, pageable);
-        return ResponseEntity.ok(usuarios);
+        var usuario = usuarioService.buscarUsuario(id, nome, email);
+        return ResponseEntity.ok(usuario);
 
     }
 }

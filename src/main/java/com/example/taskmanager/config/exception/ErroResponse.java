@@ -1,4 +1,4 @@
-package com.example.taskmanager.dto.usuario;
+package com.example.taskmanager.config.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,5 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public record UsuarioLoginDTO(String email, String senha) {
+public class ErroResponse {
+    private String message;
+    private String details;
 }
