@@ -1,5 +1,6 @@
 package com.example.taskmanager.model;
 
+import com.example.taskmanager.dto.tarefa.DadosCriarTarefa;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -62,6 +63,9 @@ public class Tarefa {
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean ativo = true;
+
+    public Tarefa(DadosCriarTarefa dados) {
+    }
 
 
     public Long getId() {

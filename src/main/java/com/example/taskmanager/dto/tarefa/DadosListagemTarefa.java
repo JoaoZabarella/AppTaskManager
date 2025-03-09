@@ -2,12 +2,20 @@ package com.example.taskmanager.dto.tarefa;
 
 import com.example.taskmanager.dto.comentario.ComentarioResponseDTO;
 import com.example.taskmanager.model.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record TarefaResponseDTO(
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public record DadosListagemTarefa(
         Long id,
         String titulo,
         String descricao,
@@ -20,7 +28,7 @@ public record TarefaResponseDTO(
         List<ComentarioResponseDTO> comentarios
 ) {
 
-    public TarefaResponseDTO(Tarefa tarefa, List<ComentarioResponseDTO> comentarios) {
+    public DadosListagemTarefa(Tarefa tarefa) {
         this(
                 tarefa.getId(),
                 tarefa.getTitulo(),
@@ -34,4 +42,6 @@ public record TarefaResponseDTO(
                 tarefa.getComentarios().stream().map(ComentarioResponseDTO::new).collect(Collectors.toList())
         );
     }
+
+
 }

@@ -8,27 +8,27 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
     Page<Usuario> findByAtivoTrue(Pageable pageable);
     Boolean existsByEmailIgnoreCase(String email);
-
     Optional<Usuario> findByIdAndAtivoTrue(Long id);
 
-
-    //Responsável por filtrar dados para buscar usuarios
-    @Query("SELECT u FROM Usuario u WHERE " +
-            "(:id IS NULL OR u.id = :id) AND"+
-            "(:nome IS NULL OR u.nome LIKE %:nome%) AND " +
-            "(:email IS NULL OR u.email = :email) AND " +
-            "u.ativo = true")
-    Page<Usuario> buscarUsuarios(
-        @Param("id") Long id,
-        @Param("nome") String nome,
-        @Param("email") String email,
-        Pageable pageable
-        );
-
+    @Query("SELECT DISTINCT u FROM Usuario u WHERE " +
+            "((COALESCE(:id, NULL) IS NULL OR u.id = :id) OR " +
+            "(COALESCE(:nome, NULL) IS NULL OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) OR " +
+            "(COALESCE(:email, NULL) IS NULL OR LOWER(u.email) = LOWER(:email))) " +
+            "AND u.ativo = true")
+    Optional<Usuario> buscarUsuario(
+            @Param("id") Long id,
+            @Param("nome") String nome,
+            @Param("email") String email
+    );
 }
+
+
+

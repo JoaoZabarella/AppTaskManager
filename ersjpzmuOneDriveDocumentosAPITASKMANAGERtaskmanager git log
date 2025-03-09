@@ -1,0 +1,29 @@
+[33mcommit dc68f9651d0b0d496d384d0e405d14b28c1ee929[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: João Pedro Zabarella <zabarellaj@gmail.com>
+Date:   Thu Mar 6 17:33:52 2025 -0300
+
+    Finalização do CRUD de usuarios e adição de métodos para ADMIN como filtros de busca
+
+[33mcommit 1e8c21980a3d402b2dad004af128d8e1c39437b5[m
+Author: João Pedro Zabarella <zabarellaj@gmail.com>
+Date:   Thu Feb 27 12:29:18 2025 -0300
+
+    Adição dos DTOS e método cadastrarUsuario na UsuarioService
+
+[33mcommit 2691cd57923266c70e8799c6b04d30ea0847f356[m
+Author: João Pedro Zabarella <zabarellaj@gmail.com>
+Date:   Wed Feb 26 16:21:07 2025 -0300
+
+    Adicionando a estrutura e migrações para o Banco de dados
+
+[33mcommit 618150a4e74c45910977372d70bb803e04f1654f[m
+Author: João Pedro Zabarella <zabarellaj@gmail.com>
+Date:   Tue Feb 25 17:17:53 2025 -0300
+
+    Adicionei todas as entidades previstas até o momento e suas  validaçõeos utilizando o Bean Validation
+
+[33mcommit 30199a3fc202726e7a9b307e2ef7059f52cf533f[m
+Author: João Pedro Zabarella <zabarellaj@gmail.com>
+Date:   Tue Feb 25 14:51:46 2025 -0300
+
+    Estrutura do projeto seguindo spring MVC
