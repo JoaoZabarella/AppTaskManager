@@ -1,15 +1,35 @@
 package com.example.taskmanager.config.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class ErroResponse {
     private String message;
     private String details;
+
+
+
+
+    public ErroResponse() {
+    }
+
+    public ErroResponse(String message, String details) {
+        this.message = message;
+        this.details = details;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
 }
