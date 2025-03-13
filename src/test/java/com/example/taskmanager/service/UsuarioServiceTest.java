@@ -187,5 +187,17 @@ class UsuarioServiceTest {
 
         verify(usuarioRepository).buscarUsuario(null, null, "email@example.com");
     }
+    
+    @Test 
+    @DisplayName("Deve buscar usuário por nome com inexistente")
+    void testBuscarUsuarioPorNomeInexistente(){
+        when(usuarioRepository.buscarUsuario(null, "Teste Usuario", null)).thenReturn(Optional.empty());
+
+        assertThrows(UsuarioNaoEncontradoException.class, () -> {
+            usuarioService.buscarUsuario(null, "Teste Usuario", null);
+        });
+
+        verify(usuarioRepository).buscarUsuario(null, "Teste Usuario", null);
+    }
 
 }

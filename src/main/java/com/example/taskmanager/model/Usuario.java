@@ -1,9 +1,7 @@
 package com.example.taskmanager.model;
 
-
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import jakarta.persistence.*;
-
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.password.PasswordEncoder;

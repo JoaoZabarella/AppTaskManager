@@ -97,8 +97,8 @@ public class UsuarioService {
                 .map(DadosListagemUsuarioDTO::new)
                 .orElseThrow(() -> {
                     String criterio = (id != null) ? "Id: " + id :
-                            (nome != null && nome.isBlank()) ? "Nome: " + nome :
-                                    (email != null && email.isBlank()) ? "Email: " + email : "Desconhecido";
+                            (nome != null) ? "Nome: " + nome :
+                                    (email != null) ? "Email: " + email : "Desconhecido";
                     logger.error("Usuário não encontrado com critério: {}", criterio);
                     return new UsuarioNaoEncontradoException(criterio);
                 });
