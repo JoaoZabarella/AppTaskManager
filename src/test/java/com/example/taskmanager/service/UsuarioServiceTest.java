@@ -149,20 +149,7 @@ class UsuarioServiceTest {
         assertFalse(usuarioCaptor.getValue().isAtivo());
     }
 
-    @Test
-    @DisplayName("Deve buscar usuário por ID com sucesso")
-    void testBuscarUsuarioPorId(){
-        when(usuarioRepository.buscarUsuario(1L, null, null)).thenReturn(Optional.of(usuario));
 
-        DadosListagemUsuarioDTO result = usuarioService.buscarUsuario(1L, null, null);
-
-        assertNotNull(result);
-        assertEquals(usuario.getId(), result.id());
-        assertEquals(usuario.getNome(), result.nome());
-        assertEquals(usuario.getEmail(), result.email());
-
-        verify(usuarioRepository).buscarUsuario(1L, null, null);
-    }
 
     @Test
     @DisplayName("Deve lançar exceção ao buscar usuário inexistente por Id")

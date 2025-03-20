@@ -5,6 +5,6 @@ CREATE TABLE comentarios(
   tarefa_id BIGINT NOT NULL,
   usuario_id BIGINT NOT NULL,
   ativo BOOLEAN DEFAULT TRUE,
-  FOREIGN KEY (tarefa_id) REFERENCES tarefas(id) ON DELETE CASCADE,
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+  FOREIGN KEY (tarefa_id) REFERENCES tarefa(id) ON DELETE CASCADE,
+  FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
 );

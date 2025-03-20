@@ -96,9 +96,9 @@ public class UsuarioService {
         return usuarioRepository.buscarUsuario(id, nome, email)
                 .map(DadosListagemUsuarioDTO::new)
                 .orElseThrow(() -> {
-                    String criterio = (id != null) ? "Id: " + id :
-                            (nome != null) ? "Nome: " + nome :
-                                    (email != null) ? "Email: " + email : "Desconhecido";
+                    String criterio = (id != null) ? "Id: " + id + " não encontrado" :
+                            (nome != null) ? "Nome: " + nome + " não encontrado":
+                                    (email != null) ? "Email: " + email + " não encontrado" : "Critério desconhecido";
                     logger.error("Usuário não encontrado com critério: {}", criterio);
                     return new UsuarioNaoEncontradoException(criterio);
                 });
