@@ -1,6 +1,6 @@
 package com.example.taskmanager.service;
 
-import com.example.taskmanager.config.exception.UsuarioNaoEncontradoException;
+import com.example.taskmanager.config.exception.UsuarioNotFoundException;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
@@ -129,7 +129,7 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThrows(UsuarioNaoEncontradoException.class, () -> {
+        assertThrows(UsuarioNotFoundException.class, () -> {
             usuarioService.atualizarDadosUsuario(dadosAtualizaUsuario);
         });
 
@@ -169,7 +169,7 @@ class UsuarioServiceTest {
     void testBuscarUsuarioIdInexistente(){
         when(usuarioRepository.buscarUsuario(999L, null, null)).thenReturn(Optional.empty());
 
-        assertThrows(UsuarioNaoEncontradoException.class, () -> {
+        assertThrows(UsuarioNotFoundException.class, () -> {
             usuarioService.buscarUsuario(999L, null, null);
         });
 
@@ -181,7 +181,7 @@ class UsuarioServiceTest {
     void testBuscarUsuarioEmailInexistente(){
         when(usuarioRepository.buscarUsuario(null, null, "email@example.com")).thenReturn(Optional.empty());
 
-        assertThrows(UsuarioNaoEncontradoException.class, () ->{
+        assertThrows(UsuarioNotFoundException.class, () ->{
             usuarioService.buscarUsuario(null, null, "email@example.com");
         });
 
@@ -193,7 +193,7 @@ class UsuarioServiceTest {
     void testBuscarUsuarioPorNomeInexistente(){
         when(usuarioRepository.buscarUsuario(null, "Teste Usuario", null)).thenReturn(Optional.empty());
 
-        assertThrows(UsuarioNaoEncontradoException.class, () -> {
+        assertThrows(UsuarioNotFoundException.class, () -> {
             usuarioService.buscarUsuario(null, "Teste Usuario", null);
         });
 

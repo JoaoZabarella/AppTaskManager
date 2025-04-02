@@ -1,6 +1,6 @@
 package com.example.taskmanager.service;
 
-import com.example.taskmanager.config.exception.UsuarioNaoEncontradoException;
+import com.example.taskmanager.config.exception.UsuarioNotFoundException;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
@@ -60,7 +60,7 @@ public class UsuarioService {
         var usuario = usuarioRepository.findById(dados.id())
                 .orElseThrow(() -> {
                     logger.error("Usuário não encontrado, ID: {}", dados.id());
-                    return new UsuarioNaoEncontradoException("ID:  " + dados.id());
+                    return new UsuarioNotFoundException("ID:  " + dados.id());
                 });
 
         if (dados.nome() != null && !dados.nome().isBlank()) {
@@ -82,7 +82,7 @@ public class UsuarioService {
         var usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Usuário não encontrado para inativação, ID: {}", id);
-                    return new UsuarioNaoEncontradoException("ID: " + id);
+                    return new UsuarioNotFoundException("ID: " + id);
                 });
 
         usuario.desativar();
@@ -100,7 +100,7 @@ public class UsuarioService {
                             (nome != null) ? "Nome: " + nome :
                                     (email != null) ? "Email: " + email : "Desconhecido";
                     logger.error("Usuário não encontrado com critério: {}", criterio);
-                    return new UsuarioNaoEncontradoException(criterio);
+                    return new UsuarioNotFoundException(criterio);
                 });
     }
 }

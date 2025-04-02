@@ -38,8 +38,10 @@ public class Tarefa {
     @JoinColumn(name = "status_id", nullable = false)
     private Status status;
 
-    @ManyToOne
-    @JoinColumn(name = "prioridade_id", nullable = false)
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Prioridade prioridade;
 
     @CreationTimestamp
@@ -65,12 +67,16 @@ public class Tarefa {
     private Boolean ativo = true;
 
     public Tarefa(DadosCriarTarefa dados) {
+        this.titulo = dados.titulo();
+        this.descricao = dados.descricao();
+        this.prioridade = Prioridade.MEDIA;
+        this.ativo = true;
     }
-
 
     public Long getId() {
         return id;
     }
+
 
     public @NotNull(message = "O titulo não pode estar em branco") @Size(max = 100, message = "O titulo deve ter no máximo 100 caractéres") String getTitulo() {
         return titulo;
@@ -108,5 +114,51 @@ public class Tarefa {
         return comentarios;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public void setTitulo(@NotNull(message = "O titulo não pode estar em branco") @Size(max = 100, message = "O titulo deve ter no máximo 100 caractéres") String titulo) {
+        this.titulo = titulo;
+    }
+
+    public void setDescricao(@Size(max = 500, message = "A descricao não pode exceder 500 caracteres") String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setPrioridade(Prioridade prioridade) {
+        this.prioridade = prioridade;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public void setDataConclusao(LocalDateTime dataConclusao) {
+        this.dataConclusao = dataConclusao;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public void setComentarios(List<Comentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
 }

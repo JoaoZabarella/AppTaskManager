@@ -14,10 +14,17 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(UsuarioNaoEncontradoException.class)
-    public ResponseEntity<ErroResponse> handleUsuarioNaoEncontrado(UsuarioNaoEncontradoException ex) {
+    @ExceptionHandler(UsuarioNotFoundException.class)
+    public ResponseEntity<ErroResponse> handleUsuarioNaoEncontrado(UsuarioNotFoundException ex) {
         log.error("Usuário não encontrado: {}", ex.getMessage(), ex);
         ErroResponse erroResponse = new ErroResponse("Usuário não encontrado", ex.getMessage());
+        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CategoriaNotFoundException.class)
+    public ResponseEntity<ErroResponse> handleCategoriaNaoEncontrada(CategoriaNotFoundException ex) {
+        log.error("Categoria não encontrada: {}", ex.getMessage(), ex);
+        ErroResponse erroResponse = new ErroResponse("Categoria não encontrada", ex.getMessage());
         return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
     }
 

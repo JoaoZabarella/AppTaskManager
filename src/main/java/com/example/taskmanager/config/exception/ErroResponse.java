@@ -6,9 +6,6 @@ public class ErroResponse {
     private String message;
     private String details;
 
-
-
-
     public ErroResponse() {
     }
 

@@ -6,25 +6,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity(name = "Prioridade")
-@Table(name = "prioridade")
-public class Prioridade {
+public enum Prioridade {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String texto;
+    BAIXA("Baixa"),
+    MEDIA("Media"),
+    ALTA("Alta"),
+    URGENTE("Urgente");
 
 
-    public String getTexto() {
-        return texto;
+    private String descricao;
+
+    Prioridade(String descricao) {
+        this.descricao = descricao;
     }
 
-    public Long getId() {
-        return id;
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public static Prioridade fromString(String texto) {
+        for (Prioridade p : Prioridade.values()) {
+            if(p.descricao.equals(texto)) {
+                return p;
+            }
+        }
+        throw new IllegalArgumentException("Prioridade não reconhecida: " + texto);
     }
 }
