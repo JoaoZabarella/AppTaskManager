@@ -1,3 +1,0 @@
-ALTER TABLE tarefas DROP FOREIGN KEY FKgt83cajcoqikkaydatn4lyjw8;
-DROP TABLE IF EXISTS status;
-DROP TABLE IF EXISTS prioridade;

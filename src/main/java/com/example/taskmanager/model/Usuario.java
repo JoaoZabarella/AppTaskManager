@@ -31,7 +31,7 @@ public class Usuario {
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
 
-    @Column(name = "ativo", nullable = false )
+    @Column(name = "ativo", nullable = false)
     private boolean ativo = true;
 
     public Long getId() {
@@ -91,7 +91,8 @@ public class Usuario {
         this.email = dados.email();
         this.senha = passwordEncoder.encode(dados.senha());
     }
-    public void desativar (){
+
+    public void desativar() {
         this.ativo = false;
     }
 

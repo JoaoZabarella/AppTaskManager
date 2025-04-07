@@ -19,7 +19,7 @@ public class Status {
         public Status() {}
 
         public Status(String texto) {
-                this.texto = texto;
+           this.texto = texto;
         }
 
 
