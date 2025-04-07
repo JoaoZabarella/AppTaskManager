@@ -32,4 +32,6 @@ public class EntidadeValidator {
                 .orElseThrow(() -> new CategoriaNotFoundException("ID " + categoriaId));
     }
 
+
+
 }
