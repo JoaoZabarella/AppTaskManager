@@ -63,6 +63,9 @@ public class Tarefa {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean ativo = true;
 
+    @Column(name = "prazo")
+    private LocalDateTime prazo;
+
     public Tarefa() {
         this.ativo = true;
         this.comentarios = new ArrayList<>();
@@ -101,6 +104,14 @@ public class Tarefa {
 
     public LocalDateTime getDataConclusao() {
         return dataConclusao;
+    }
+
+    public LocalDateTime getPrazo() {
+        return prazo;
+    }
+
+    public void setPrazo(LocalDateTime prazo) {
+        this.prazo = prazo;
     }
 
     public Usuario getUsuario() {
@@ -164,12 +175,16 @@ public class Tarefa {
     }
 
 
-
-    public void concluir(){
+    public void concluir() {
         this.dataConclusao = LocalDateTime.now();
     }
-    public boolean isConcluida(){
+
+    public boolean isConcluida() {
         return this.dataConclusao != null;
+    }
+
+    public void desativar() {
+        this.ativo = false;
     }
 
 }
