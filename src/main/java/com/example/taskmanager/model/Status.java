@@ -6,25 +6,37 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity(name = "Status")
+@Entity
 @Table(name = "status")
 public class Status {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String texto;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        private String texto;
 
 
-    public Long getId() {
-        return id;
-    }
+        public Status() {}
 
-    public String getTexto() {
-        return texto;
+        public Status(String texto) {
+                this.texto = texto;
+        }
 
-    }
+
+        public Long getId() {
+                return id;
+        }
+
+        public void setId(Long id) {
+                this.id = id;
+        }
+
+        public String getTexto() {
+                return texto;
+        }
+
+        public void setTexto(String texto) {
+                this.texto = texto;
+        }
 }
+

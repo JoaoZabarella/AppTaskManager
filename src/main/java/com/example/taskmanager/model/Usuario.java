@@ -1,11 +1,7 @@
 package com.example.taskmanager.model;
 
-
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,7 +11,6 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity(name = "Usuario")
 @Table(name = "usuarios")
 @EqualsAndHashCode(of = "id")

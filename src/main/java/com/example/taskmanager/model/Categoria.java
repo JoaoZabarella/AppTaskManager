@@ -20,7 +20,7 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "O nome da cateoria é obrigatório.")
+    @NotNull(message = "O nome da categoria é obrigatório.")
     @Column(unique = true)
     private String nome;
 
@@ -28,6 +28,11 @@ public class Categoria {
 
     @OneToMany(mappedBy = "categoria")
     private List<Tarefa> tarefas;
+
+    public Categoria(String nome, String descricao) {
+        this.nome = nome;
+        this.descricao = descricao;
+    }
 
     //Lomboock não reconhece o getNome
     public String getNome() {

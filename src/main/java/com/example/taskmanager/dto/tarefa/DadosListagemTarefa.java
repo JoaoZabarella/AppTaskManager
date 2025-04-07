@@ -11,10 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
 public record DadosListagemTarefa(
         Long id,
         String titulo,
