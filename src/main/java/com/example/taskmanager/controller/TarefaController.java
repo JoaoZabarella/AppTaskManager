@@ -28,5 +28,10 @@ public class TarefaController {
     }
 
 
+    @PutMapping("/{id}/concluir")
+    public ResponseEntity<DadosListagemTarefa> concluirTarefa(@PathVariable Long id){
+        return tarefaService.concluirTarefa(id);
+    }
+
 
 }

@@ -13,12 +13,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity(name = "Tarefa")
 @Table(name = "tarefas")
 public class Tarefa {
@@ -38,17 +38,14 @@ public class Tarefa {
     @JoinColumn(name = "status_id", nullable = false)
     private Status status;
 
-
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "prioridade_id", nullable = false)
     private Prioridade prioridade;
 
     @CreationTimestamp
     @Column(name = "data_criacao", updatable = false)
     private LocalDateTime dataCriacao;
 
-    @UpdateTimestamp
     @Column(name = "data_conclusao")
     private LocalDateTime dataConclusao;
 
@@ -61,15 +58,19 @@ public class Tarefa {
     private Categoria categoria;
 
     @OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comentario> comentarios;
+    private List<Comentario> comentarios = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean ativo = true;
 
+    public Tarefa() {
+        this.ativo = true;
+        this.comentarios = new ArrayList<>();
+    }
+
     public Tarefa(DadosCriarTarefa dados) {
         this.titulo = dados.titulo();
         this.descricao = dados.descricao();
-        this.prioridade = Prioridade.MEDIA;
         this.ativo = true;
     }
 
@@ -161,4 +162,14 @@ public class Tarefa {
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
     }
+
+
+
+    public void concluir(){
+        this.dataConclusao = LocalDateTime.now();
+    }
+    public boolean isConcluida(){
+        return this.dataConclusao != null;
+    }
+
 }

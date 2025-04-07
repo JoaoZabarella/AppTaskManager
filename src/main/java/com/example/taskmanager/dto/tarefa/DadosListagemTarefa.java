@@ -2,12 +2,8 @@ package com.example.taskmanager.dto.tarefa;
 
 import com.example.taskmanager.dto.comentario.ComentarioResponseDTO;
 import com.example.taskmanager.model.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,9 +32,9 @@ public record DadosListagemTarefa(
                 tarefa.getDataConclusao(),
                 tarefa.getUsuario(),
                 tarefa.getCategoria(),
-                tarefa.getComentarios().stream().map(ComentarioResponseDTO::new).collect(Collectors.toList())
+                tarefa.getComentarios() != null
+                        ? tarefa.getComentarios().stream().map(ComentarioResponseDTO::new).collect(Collectors.toList())
+                        : Collections.emptyList()
         );
     }
-
-
 }
