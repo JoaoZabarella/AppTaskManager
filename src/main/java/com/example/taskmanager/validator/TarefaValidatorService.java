@@ -1,5 +1,8 @@
 package com.example.taskmanager.validator;
 
+import com.example.taskmanager.config.exception.PrioridadeNotFoundException;
+import com.example.taskmanager.config.exception.StatusNotFoundException;
+import com.example.taskmanager.config.exception.TarefaNotFoundException;
 import com.example.taskmanager.dto.tarefa.DadosAtualizaTarefa;
 import com.example.taskmanager.model.*;
 import com.example.taskmanager.repository.PrioridadeRepository;
@@ -29,17 +32,14 @@ public class TarefaValidatorService {
     }
 
     public Tarefa validadorObterTarefa(Long tarefaId) {
-        return tarefaRepository.findById(tarefaId)
-                .orElseThrow(() -> new RuntimeException("Tarefa não localizada"));
+        return validator.validarTarefa(tarefaId);
     }
     public Status validadorObterStatus(String status) {
-        return statusRepository.findByTextoIgnoreCase(status)
-                .orElseThrow(() -> new RuntimeException("Status não encontrado"));
+        return validator.validarStatus(status);
     }
 
     public Prioridade validadorObterPrioridade(String prioridade) {
-        return prioridadeRepository.findByTextoIgnoreCase(prioridade)
-                .orElseThrow(() -> new RuntimeException("Prioridade não encontrada"));
+        return validator.validarPrioridade(prioridade);
     }
 
     public Usuario validadorObterUsuario(Long usuarioId) {
@@ -47,44 +47,47 @@ public class TarefaValidatorService {
     }
 
     public Categoria validadorObterCategoria(Long categoriaId) {
-        if(categoriaId == null) {
-            return null;
-        }
         return validator.validarCategoria(categoriaId);
     }
 
 
-    public void atualizarCampos(Tarefa tarefa, DadosAtualizaTarefa dados) {
-        atualizarTitulo(tarefa, dados.titulo());
+    public void atualizarCampos(Tarefa tarefa, DadosAtualizaTarefa dados){
+
     }
 
-    private void atualizarTitulo(Tarefa tarefa, String titulo) {
+    public void atualizarTitulo(Tarefa tarefa, String titulo){
         if(titulo != null) {
             tarefa.setTitulo(titulo);
         }
     }
 
-    private void atualizarDescricao(Tarefa tarefa, String descricao) {
-        if(descricao != null){
+    public void atualizarDescricao(Tarefa tarefa, String descricao){
+        if(descricao != null) {
             tarefa.setDescricao(descricao);
         }
     }
 
-    private void atualizarStatus(Tarefa tarefa, String statusTexto) {
-        if(statusTexto != null){
-            tarefa.setStatus(validadorObterStatus(statusTexto));
+    public void atualizarStatus(Tarefa tarefa, String status){
+        if(status != null) {
+            tarefa.setStatus(validator.validarStatus(status));
         }
     }
 
-    private void atualizarPrioridade(Tarefa tarefa, String prioridadeTexto){
-        if(prioridadeTexto != null){
-            tarefa.setPrioridade(validadorObterPrioridade(prioridadeTexto));
+    public void atualizarPrioridade(Tarefa tarefa, String prioridade){
+        if(prioridade != null){
+            tarefa.setPrioridade(validator.validarPrioridade(prioridade));
         }
     }
 
-    private void atualizarPrazo(Tarefa tarefa, LocalDateTime prazo){
-        if(prazo != null){
+    public void atualizarPrazo(Tarefa tarefa, LocalDateTime prazo){
+        if(prazo != null) {
             tarefa.setPrazo(prazo);
+        }
+    }
+
+    public void validarTarefaNaoConcluida(Tarefa tarefa){
+        if(tarefa.isConcluida()){
+            throw new RuntimeException("Esta tarefa já esta concluida");
         }
     }
 

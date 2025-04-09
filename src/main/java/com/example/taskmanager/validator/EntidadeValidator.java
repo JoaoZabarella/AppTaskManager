@@ -1,22 +1,28 @@
 package com.example.taskmanager.validator;
 
 
-import com.example.taskmanager.config.exception.CategoriaNotFoundException;
-import com.example.taskmanager.config.exception.UsuarioNotFoundException;
-import com.example.taskmanager.model.Categoria;
-import com.example.taskmanager.model.Usuario;
-import com.example.taskmanager.repository.CategoriaRepository;
-import com.example.taskmanager.repository.UsuarioRepository;
+import com.example.taskmanager.config.exception.*;
+import com.example.taskmanager.dto.tarefa.DadosAtualizaTarefa;
+import com.example.taskmanager.model.*;
+import com.example.taskmanager.repository.*;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class EntidadeValidator {
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
+    private final TarefaRepository tarefaRepository;
+    private final StatusRepository statusRepository;
+    private final PrioridadeRepository prioridadeRepository;
 
-    public EntidadeValidator(UsuarioRepository usuarioRepository, CategoriaRepository categoriaRepository) {
+    public EntidadeValidator(UsuarioRepository usuarioRepository, CategoriaRepository categoriaRepository, TarefaRepository tarefaRepository, StatusRepository statusRepository, PrioridadeRepository prioridadeRepository) {
         this.usuarioRepository = usuarioRepository;
         this.categoriaRepository = categoriaRepository;
+        this.tarefaRepository = tarefaRepository;
+        this.statusRepository = statusRepository;
+        this.prioridadeRepository = prioridadeRepository;
     }
 
     public Usuario validarUsuario(Long usuarioId){
@@ -31,6 +37,39 @@ public class EntidadeValidator {
         return categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> new CategoriaNotFoundException("ID " + categoriaId));
     }
+
+    public Categoria validarCategoriaDoUsuario(Long categoriaId, Long usuarioId){
+        if(categoriaId == null) {
+            return null;
+        }
+        return categoriaRepository.findByIdAndUsuarioIdAndAtivoTrue(categoriaId, usuarioId)
+                .orElseThrow(() -> new CategoriaNotFoundException("Categoria ID " + categoriaId +
+                        "Não encontrada ou não pertence ao usuário de ID: " + usuarioId));
+    }
+
+    public void validarNomeCategoriaDuplicado(String nome, Long usuarioId){
+        if(categoriaRepository.existsByNomeAndUsuarioIdAndAtivoTrue(nome, usuarioId)){
+            throw new RuntimeException("Já existe uma categoria com este nome para este usuário");
+        }
+    }
+
+    public Tarefa validarTarefa(Long tarefaId){
+        return tarefaRepository.findByIdAndAtivoTrue(tarefaId)
+                .orElseThrow(() -> new TarefaNotFoundException("Tarefa com ID " +tarefaId+ " não encontrada"));
+    }
+
+    public Status validarStatus(String statusTexto){
+        return statusRepository.findByTextoIgnoreCase(statusTexto)
+                .orElseThrow(() -> new StatusNotFoundException("Status com o nome de: " +statusTexto + " não encontarado"));
+    }
+
+    public Prioridade validarPrioridade(String prioridadeTexto){
+        return prioridadeRepository.findByTextoIgnoreCase(prioridadeTexto)
+                .orElseThrow(() -> new PrioridadeNotFoundException("Prioridade com o nome de: " +prioridadeTexto + " não encontrado"));
+    }
+
+
+
 
 
 

@@ -28,6 +28,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(TarefaNotFoundException.class)
+    public ResponseEntity<ErroResponse> handleTarefaNaoEncontrada(TarefaNotFoundException ex) {
+        log.error("Tarefa não encontrada: {}", ex.getMessage(), ex);
+        ErroResponse erroResponse = new ErroResponse("Tarefa não encontrada", ex.getMessage());
+        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(StatusNotFoundException.class)
+    public ResponseEntity<ErroResponse> handleStatusNaoEncontrado(StatusNotFoundException ex) {
+        log.error("Status não encontrada: {}", ex.getMessage(), ex);
+        ErroResponse erroResponse = new ErroResponse("Status não encontrado", ex.getMessage());
+        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> handleGeneralException(Exception ex) {
         log.error("Erro inesperado: {}", ex.getMessage(), ex);

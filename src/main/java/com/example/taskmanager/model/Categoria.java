@@ -24,14 +24,28 @@ public class Categoria {
     @Column(unique = true)
     private String nome;
 
-    private String descricao;
-
     @OneToMany(mappedBy = "categoria")
     private List<Tarefa> tarefas;
 
-    public Categoria(String nome, String descricao) {
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
+    @Column(nullable = false, columnDefinition = "BOLEAN DEFAULT TRUE")
+    private Boolean ativo = true;
+
+    public Categoria(String nome) {
         this.nome = nome;
-        this.descricao = descricao;
+        this.ativo = true;
+    }
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setNome(@NotNull(message = "O nome da categoria é obrigatório.") String nome) {
+        this.nome = nome;
     }
 
     //Lomboock não reconhece o getNome
@@ -41,5 +55,33 @@ public class Categoria {
     //Lomboock não reconhece o getId
     public Long getId() {
         return id;
+    }
+
+    public void desativar(){
+        this.ativo = false;
+    }
+
+    public List<Tarefa> getTarefas() {
+        return tarefas;
+    }
+
+    public void setTarefas(List<Tarefa> tarefas) {
+        this.tarefas = tarefas;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }

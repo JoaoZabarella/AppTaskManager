@@ -65,16 +65,13 @@ public class TarefaService {
 
     @Transactional
     public void excluirTarefa(Long id) {
-        Tarefa tarefa = tarefaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada "));
+        Tarefa tarefa = validatorService.validadorObterTarefa(id);
         tarefa.desativar();
     }
 
     @Transactional
     public ResponseEntity<DadosListagemTarefa> concluirTarefa(Long tarefaId) {
-        var tarefa = tarefaRepository.findById(tarefaId)
-                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
-
+        var tarefa = validatorService.validadorObterTarefa(tarefaId);
         Status statusConcluido = validatorService.validadorObterStatus("Concluido");
 
         tarefa.setStatus(statusConcluido);
