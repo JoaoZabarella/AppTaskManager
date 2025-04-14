@@ -16,7 +16,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Page<Usuario> findByAtivoTrue(Pageable pageable);
     Boolean existsByEmailIgnoreCase(String email);
+    Boolean existsByNomeIgnoreCase(String nome);
     Optional<Usuario> findByIdAndAtivoTrue(Long id);
+
 
     @Query("SELECT DISTINCT u FROM Usuario u WHERE " +
             "((COALESCE(:id, NULL) IS NULL OR u.id = :id) OR " +

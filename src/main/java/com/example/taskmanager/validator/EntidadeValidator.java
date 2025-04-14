@@ -1,13 +1,10 @@
 package com.example.taskmanager.validator;
 
 
-import com.example.taskmanager.config.exception.*;
-import com.example.taskmanager.dto.tarefa.DadosAtualizaTarefa;
+import com.example.taskmanager.config.exception.classes.*;
 import com.example.taskmanager.model.*;
 import com.example.taskmanager.repository.*;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 public class EntidadeValidator {
@@ -68,9 +65,16 @@ public class EntidadeValidator {
                 .orElseThrow(() -> new PrioridadeNotFoundException("Prioridade com o nome de: " +prioridadeTexto + " não encontrado"));
     }
 
+    public void validarEmailDuplicado(String email){
+        if(usuarioRepository.existsByEmailIgnoreCase(email)){
+            throw new EmailDuplicateException("Email inserido ja esta em uso");
+        }
+    }
 
-
-
-
+    public void validarNomeUsuarioExistente(String nome){
+        if(usuarioRepository.existsByNomeIgnoreCase(nome)){
+            throw new UsernameExistException("Este nome de usuário ja esta em uso");
+        }
+    }
 
 }

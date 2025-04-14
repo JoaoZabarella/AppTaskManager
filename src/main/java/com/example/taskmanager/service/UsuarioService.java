@@ -1,11 +1,12 @@
 package com.example.taskmanager.service;
 
-import com.example.taskmanager.config.exception.UsuarioNotFoundException;
+import com.example.taskmanager.config.exception.classes.UsuarioNotFoundException;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.mapper.UsuarioMapper;
 import com.example.taskmanager.repository.UsuarioRepository;
+import com.example.taskmanager.validator.EntidadeValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -24,21 +25,22 @@ public class UsuarioService {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     private final UsuarioRepository usuarioRepository;
-    private final UsuarioValidator usuarioValidator;
+    private final EntidadeValidator validator;
     private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioValidator usuarioValidator, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository, EntidadeValidator validator, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
-        this.usuarioValidator = usuarioValidator;
+        this.validator = validator;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
-    public ResponseEntity<DadosListagemUsuarioDTO> cadastraUsuario(DadosCadastroUsuario usuarioCadastro, UriComponentsBuilder uriBuilder) {
-        logger.info("Iniciando cadastro de usuário com e-mail: {}", usuarioCadastro.email());
+    public ResponseEntity<DadosListagemUsuarioDTO> cadastraUsuario(DadosCadastroUsuario dados, UriComponentsBuilder uriBuilder) {
+        logger.info("Iniciando cadastro de usuário com e-mail: {}", dados.email());
 
-        usuarioValidator.validarEmail(usuarioCadastro.email());
-        var usuario = UsuarioMapper.toEntity(usuarioCadastro, passwordEncoder);
+        validator.validarEmailDuplicado(dados.email());
+        validator.validarNomeUsuarioExistente(dados.nome());
+        var usuario = UsuarioMapper.toEntity(dados, passwordEncoder);
 
         usuarioRepository.save(usuario);
 

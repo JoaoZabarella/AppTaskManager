@@ -3,8 +3,6 @@ package com.example.taskmanager.validator;
 import com.example.taskmanager.dto.categoria.DadosAtualizaCategoria;
 import com.example.taskmanager.model.Categoria;
 import com.example.taskmanager.model.Usuario;
-import com.example.taskmanager.repository.CategoriaRepository;
-import com.example.taskmanager.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 @Service

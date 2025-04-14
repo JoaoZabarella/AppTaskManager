@@ -39,49 +39,9 @@ public class Categoria {
         this.ativo = true;
     }
 
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setNome(@NotNull(message = "O nome da categoria é obrigatório.") String nome) {
-        this.nome = nome;
-    }
-
-    //Lomboock não reconhece o getNome
-    public String getNome() {
-        return nome;
-    }
-    //Lomboock não reconhece o getId
-    public Long getId() {
-        return id;
-    }
-
-    public void desativar(){
+    public void inativar() {
         this.ativo = false;
     }
 
-    public List<Tarefa> getTarefas() {
-        return tarefas;
-    }
 
-    public void setTarefas(List<Tarefa> tarefas) {
-        this.tarefas = tarefas;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public Boolean getAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
-    }
 }

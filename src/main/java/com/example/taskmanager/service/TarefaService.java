@@ -48,15 +48,18 @@ public class TarefaService {
         return ResponseEntity.created(uri).body(new DadosListagemTarefa(tarefa));
     }
 
-    public Page<DadosListagemTarefa> listarTarefasAtivas(Long usuarioId, Pageable pageable) {
-        return tarefaRepository.findByUsuarioIdAndAtivoTrue(usuarioId, pageable)
+    public ResponseEntity<Page<DadosListagemTarefa>> listarTarefasAtivas(Long usuarioId, Pageable pageable) {
+
+        Page<DadosListagemTarefa> tarefas = tarefaRepository.findByUsuarioIdAndAtivoTrue(usuarioId, pageable)
                 .map(DadosListagemTarefa::new);
+
+        return ResponseEntity.ok(tarefas);
+
     }
 
     @Transactional
     public ResponseEntity<DadosListagemTarefa> atualizarTarefa(Long tarefaId, DadosAtualizaTarefa dados) {
         var tarefa = validatorService.validadorObterTarefa(tarefaId);
-
         validatorService.atualizarCampos(tarefa, dados);
         tarefaRepository.save(tarefa);
 

@@ -1,14 +1,10 @@
 package com.example.taskmanager.validator;
 
-import com.example.taskmanager.config.exception.PrioridadeNotFoundException;
-import com.example.taskmanager.config.exception.StatusNotFoundException;
-import com.example.taskmanager.config.exception.TarefaNotFoundException;
 import com.example.taskmanager.dto.tarefa.DadosAtualizaTarefa;
 import com.example.taskmanager.model.*;
 import com.example.taskmanager.repository.PrioridadeRepository;
 import com.example.taskmanager.repository.StatusRepository;
 import com.example.taskmanager.repository.TarefaRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.example.taskmanager.config.exception;
+package com.example.taskmanager.config.exception.classes;
 
 public class StatusNotFoundException extends RuntimeException{
     private Long id;
