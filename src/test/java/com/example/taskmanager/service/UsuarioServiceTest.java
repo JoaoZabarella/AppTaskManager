@@ -1,11 +1,12 @@
 package com.example.taskmanager.service;
 
-import com.example.taskmanager.config.exception.UsuarioNotFoundException;
+import com.example.taskmanager.config.exception.classes.UsuarioNotFoundException;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.model.Usuario;
 import com.example.taskmanager.repository.UsuarioRepository;
+import com.example.taskmanager.validator.EntidadeValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class UsuarioServiceTest {
     private UsuarioRepository usuarioRepository;
 
     @Mock
-    private UsuarioValidator usuarioValidator;
+    private EntidadeValidator validator;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -46,7 +47,7 @@ class UsuarioServiceTest {
     private UsuarioService usuarioService;
 
     private Usuario usuario;
-    private DadosCadastroUsuario dadosCadastro;
+    private DadosCadastroUsuario dados;
     private UriComponentsBuilder uriBuilder;
 
     @BeforeEach
@@ -58,7 +59,7 @@ class UsuarioServiceTest {
         usuario.setSenha("senha_encoded");
         usuario.setAtivo(true);
 
-        dadosCadastro = new DadosCadastroUsuario("Teste Usuario", "teste@example.com", "senha_encoded");
+        dados = new DadosCadastroUsuario("Teste Usuario", "teste@example.com", "senha_encoded");
 
         uriBuilder = UriComponentsBuilder.fromHttpUrl("/");
     }
@@ -73,9 +74,9 @@ class UsuarioServiceTest {
                     usuario.setId(1L);
                     return usuario;
                 } );
-        doNothing().when(usuarioValidator).validarEmail(anyString());
+        doNothing().when(validator).validarEmailDuplicado(anyString());
 
-        ResponseEntity<DadosListagemUsuarioDTO> response = usuarioService.cadastraUsuario(dadosCadastro, uriBuilder);
+        ResponseEntity<DadosListagemUsuarioDTO> response = usuarioService.cadastraUsuario(dados, uriBuilder);
 
         assertEquals(201, response.getStatusCodeValue());
         assertNotNull(response.getBody());
@@ -83,8 +84,9 @@ class UsuarioServiceTest {
         assertEquals(usuario.getNome(), response.getBody().nome());
         assertEquals(usuario.getEmail(), response.getBody().email());
 
-        verify(usuarioValidator).validarEmail(dadosCadastro.email());
-        verify(passwordEncoder).encode(dadosCadastro.senha());
+        verify(validator).validarEmailDuplicado(dados.email());
+        verify(validator).validarNomeUsuarioExistente(dados.nome());
+        verify(passwordEncoder).encode(dados.senha());
         verify(usuarioRepository).save(any(Usuario.class));
 
     }

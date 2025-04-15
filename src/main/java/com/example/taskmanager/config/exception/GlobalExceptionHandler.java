@@ -1,11 +1,13 @@
 package com.example.taskmanager.config.exception;
 
+import com.example.taskmanager.config.exception.classes.*;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
@@ -13,6 +15,21 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+
+    @ExceptionHandler(EmailDuplicateException.class)
+    public ResponseEntity<ErroResponse> handleEmailDuplicateException(EmailDuplicateException ex) {
+        log.error("Email já cadastrado: {}", ex.getMessage(), ex);
+        ErroResponse erroResponse = new ErroResponse("Erro com email", ex.getMessage());
+        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UsernameExistException.class)
+    public ResponseEntity<ErroResponse> handleUsernameExistException(UsernameExistException ex) {
+        log.error("Nome de usuário ja em uso: {}", ex.getMessage(), ex);
+        ErroResponse erroResponse = new ErroResponse("Erro com username", ex.getMessage());
+        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(UsuarioNotFoundException.class)
     public ResponseEntity<ErroResponse> handleUsuarioNaoEncontrado(UsuarioNotFoundException ex) {
@@ -25,6 +42,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErroResponse> handleCategoriaNaoEncontrada(CategoriaNotFoundException ex) {
         log.error("Categoria não encontrada: {}", ex.getMessage(), ex);
         ErroResponse erroResponse = new ErroResponse("Categoria não encontrada", ex.getMessage());
+        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TarefaNotFoundException.class)
+    public ResponseEntity<ErroResponse> handleTarefaNaoEncontrada(TarefaNotFoundException ex) {
+        log.error("Tarefa não encontrada: {}", ex.getMessage(), ex);
+        ErroResponse erroResponse = new ErroResponse("Tarefa não encontrada", ex.getMessage());
+        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(StatusNotFoundException.class)
+    public ResponseEntity<ErroResponse> handleStatusNaoEncontrado(StatusNotFoundException ex) {
+        log.error("Status não encontrada: {}", ex.getMessage(), ex);
+        ErroResponse erroResponse = new ErroResponse("Status não encontrado", ex.getMessage());
         return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
     }
 

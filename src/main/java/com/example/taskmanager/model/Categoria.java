@@ -24,22 +24,24 @@ public class Categoria {
     @Column(unique = true)
     private String nome;
 
-    private String descricao;
-
     @OneToMany(mappedBy = "categoria")
     private List<Tarefa> tarefas;
 
-    public Categoria(String nome, String descricao) {
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
+    @Column(nullable = false, columnDefinition = "BOLEAN DEFAULT TRUE")
+    private Boolean ativo = true;
+
+    public Categoria(String nome) {
         this.nome = nome;
-        this.descricao = descricao;
+        this.ativo = true;
     }
 
-    //Lomboock não reconhece o getNome
-    public String getNome() {
-        return nome;
+    public void inativar() {
+        this.ativo = false;
     }
-    //Lomboock não reconhece o getId
-    public Long getId() {
-        return id;
-    }
+
+
 }

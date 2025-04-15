@@ -48,15 +48,18 @@ public class TarefaService {
         return ResponseEntity.created(uri).body(new DadosListagemTarefa(tarefa));
     }
 
-    public Page<DadosListagemTarefa> listarTarefasAtivas(Long usuarioId, Pageable pageable) {
-        return tarefaRepository.findByUsuarioIdAndAtivoTrue(usuarioId, pageable)
+    public ResponseEntity<Page<DadosListagemTarefa>> listarTarefasAtivas(Long usuarioId, Pageable pageable) {
+
+        Page<DadosListagemTarefa> tarefas = tarefaRepository.findByUsuarioIdAndAtivoTrue(usuarioId, pageable)
                 .map(DadosListagemTarefa::new);
+
+        return ResponseEntity.ok(tarefas);
+
     }
 
     @Transactional
     public ResponseEntity<DadosListagemTarefa> atualizarTarefa(Long tarefaId, DadosAtualizaTarefa dados) {
         var tarefa = validatorService.validadorObterTarefa(tarefaId);
-
         validatorService.atualizarCampos(tarefa, dados);
         tarefaRepository.save(tarefa);
 
@@ -65,16 +68,13 @@ public class TarefaService {
 
     @Transactional
     public void excluirTarefa(Long id) {
-        Tarefa tarefa = tarefaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada "));
+        Tarefa tarefa = validatorService.validadorObterTarefa(id);
         tarefa.desativar();
     }
 
     @Transactional
     public ResponseEntity<DadosListagemTarefa> concluirTarefa(Long tarefaId) {
-        var tarefa = tarefaRepository.findById(tarefaId)
-                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
-
+        var tarefa = validatorService.validadorObterTarefa(tarefaId);
         Status statusConcluido = validatorService.validadorObterStatus("Concluido");
 
         tarefa.setStatus(statusConcluido);

@@ -1,4 +1,4 @@
-package com.example.taskmanager.config.exception;
+package com.example.taskmanager.config.exception.classes;
 
 import lombok.Getter;
 
@@ -14,6 +14,4 @@ public class CategoriaNotFoundException extends RuntimeException {
         super("Categoria com ID [" + id + "] não encontrada");
         this.id = id;
     }
-
-
 }

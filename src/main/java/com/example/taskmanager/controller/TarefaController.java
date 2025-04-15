@@ -38,8 +38,7 @@ public class TarefaController {
             @PageableDefault(size = 10, sort = "dataCriacao", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
-        Page<DadosListagemTarefa> tarefas = tarefaService.listarTarefasAtivas(usuarioId, pageable);
-        return ResponseEntity.ok(tarefas);
+        return tarefaService.listarTarefasAtivas(usuarioId, pageable);
     }
     @PutMapping("/{id}")
     public ResponseEntity<DadosListagemTarefa> atualizar(@PathVariable Long id, @RequestBody @Valid DadosAtualizaTarefa dados){
