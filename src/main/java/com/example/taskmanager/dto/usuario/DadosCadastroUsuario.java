@@ -14,6 +14,11 @@ public record DadosCadastroUsuario(
 
         @NotBlank()
         @Size(min = 6, message = "A senha precisa ter mais de 6 digitos")
-        String senha)
+        String senha,
+
+        @NotBlank(message = "A confirmação de senha não pode estar em branco")
+        String confirmaSenha
+
+)
 {
 }

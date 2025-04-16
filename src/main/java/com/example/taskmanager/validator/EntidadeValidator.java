@@ -1,10 +1,18 @@
 package com.example.taskmanager.validator;
 
-
-import com.example.taskmanager.config.exception.classes.*;
+import com.example.taskmanager.config.exception.classes.categoria.CategoriaNameDuplicateException;
+import com.example.taskmanager.config.exception.classes.categoria.CategoriaNotFoundException;
+import com.example.taskmanager.config.exception.classes.prioridade.PrioridadeNotFoundException;
+import com.example.taskmanager.config.exception.classes.status.StatusNotFoundException;
+import com.example.taskmanager.config.exception.classes.tarefa.TarefaNotFoundException;
+import com.example.taskmanager.config.exception.classes.usuario.*;
+import com.example.taskmanager.dto.categoria.DadosAtualizaCategoria;
+import com.example.taskmanager.dto.tarefa.DadosAtualizaTarefa;
+import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.model.*;
 import com.example.taskmanager.repository.*;
 import org.springframework.stereotype.Component;
+import java.time.LocalDateTime;
 
 @Component
 public class EntidadeValidator {
@@ -22,21 +30,21 @@ public class EntidadeValidator {
         this.prioridadeRepository = prioridadeRepository;
     }
 
-    public Usuario validarUsuario(Long usuarioId){
+    public Usuario validarUsuario(Long usuarioId) {
         return usuarioRepository.findByIdAndAtivoTrue(usuarioId)
                 .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
     }
 
-    public Categoria validarCategoria(Long categoriaId){
-        if(categoriaId == null) {
+    public Categoria validarCategoria(Long categoriaId) {
+        if (categoriaId == null) {
             return null;
         }
         return categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> new CategoriaNotFoundException("ID " + categoriaId));
     }
 
-    public Categoria validarCategoriaDoUsuario(Long categoriaId, Long usuarioId){
-        if(categoriaId == null) {
+    public Categoria validarCategoriaDoUsuario(Long categoriaId, Long usuarioId) {
+        if (categoriaId == null) {
             return null;
         }
         return categoriaRepository.findByIdAndUsuarioIdAndAtivoTrue(categoriaId, usuarioId)
@@ -44,37 +52,115 @@ public class EntidadeValidator {
                         "Não encontrada ou não pertence ao usuário de ID: " + usuarioId));
     }
 
-    public void validarNomeCategoriaDuplicado(String nome, Long usuarioId){
-        if(categoriaRepository.existsByNomeAndUsuarioIdAndAtivoTrue(nome, usuarioId)){
+    public void validarNomeCategoriaDuplicado(String nome, Long usuarioId) {
+        if (categoriaRepository.existsByNomeAndUsuarioIdAndAtivoTrue(nome, usuarioId)) {
             throw new RuntimeException("Já existe uma categoria com este nome para este usuário");
         }
     }
 
-    public Tarefa validarTarefa(Long tarefaId){
+    public Tarefa validarTarefa(Long tarefaId) {
         return tarefaRepository.findByIdAndAtivoTrue(tarefaId)
-                .orElseThrow(() -> new TarefaNotFoundException("Tarefa com ID " +tarefaId+ " não encontrada"));
+                .orElseThrow(() -> new TarefaNotFoundException("Tarefa com ID " + tarefaId + " não encontrada"));
     }
 
-    public Status validarStatus(String statusTexto){
+    public Status validarStatus(String statusTexto) {
         return statusRepository.findByTextoIgnoreCase(statusTexto)
-                .orElseThrow(() -> new StatusNotFoundException("Status com o nome de: " +statusTexto + " não encontarado"));
+                .orElseThrow(() -> new StatusNotFoundException("Status com o nome de: " + statusTexto + " não encontarado"));
     }
 
-    public Prioridade validarPrioridade(String prioridadeTexto){
+    public Prioridade validarPrioridade(String prioridadeTexto) {
         return prioridadeRepository.findByTextoIgnoreCase(prioridadeTexto)
-                .orElseThrow(() -> new PrioridadeNotFoundException("Prioridade com o nome de: " +prioridadeTexto + " não encontrado"));
+                .orElseThrow(() -> new PrioridadeNotFoundException("Prioridade com o nome de: " + prioridadeTexto + " não encontrado"));
     }
 
-    public void validarEmailDuplicado(String email){
-        if(usuarioRepository.existsByEmailIgnoreCase(email)){
+    public void validarEmailDuplicado(String email) {
+        if (usuarioRepository.existsByEmailIgnoreCase(email)) {
             throw new EmailDuplicateException("Email inserido ja esta em uso");
         }
     }
 
-    public void validarNomeUsuarioExistente(String nome){
-        if(usuarioRepository.existsByNomeIgnoreCase(nome)){
+    public void validarNomeUsuarioExistente(String nome) {
+        if (usuarioRepository.existsByNomeIgnoreCase(nome)) {
             throw new UsernameExistException("Este nome de usuário ja esta em uso");
         }
     }
 
+    public Usuario validarEmailLogin(String email) {
+        return usuarioRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new EmailNotFoundException("Email não cadastrado: " + email));
+    }
+
+    public void validarConfirmacaoDeSenha(String senha, String confirmaSenha) {
+        if (!senha.equals(confirmaSenha)) {
+            throw new PasswordConfirmationException("A confirmação de senha não é igual a senha");
+        }
+    }
+
+    public void atualizarUsuario(Usuario usuario, DadosAtualizaUsuario dados) {
+
+        if (dados.nome() != null && !dados.nome().isBlank() && !dados.nome().equals(usuario.getNome())) {
+            validarNomeUsuarioExistente(dados.nome());
+            usuario.setNome(dados.nome());
+        }
+
+        if (dados.email() != null && !dados.email().isBlank() && !dados.email().equals(usuario.getEmail())) {
+            validarEmailDuplicado(dados.email());
+            usuario.setEmail(dados.email());
+        }
+    }
+
+    public void validarNomeCategoria(String nome, Long usuarioId) {
+        if (categoriaRepository.existsByNomeAndUsuarioIdAndAtivoTrue(nome, usuarioId)) {
+            throw new CategoriaNameDuplicateException("Já existe uma categoria com o mesmo nome");
+        }
+    }
+
+    public void atualizarCategoria(Categoria categoria, DadosAtualizaCategoria dados) {
+        if (dados.nome() != null && !dados.nome().isBlank() && !dados.nome().equals(categoria.getNome())) {
+            validarNomeCategoriaDuplicado(dados.nome(), categoria.getUsuario().getId());
+            categoria.setNome(dados.nome());
+        }
+    }
+
+    public void validarTarefaNaoConcluida(Tarefa tarefa) {
+        if (tarefa.isConcluida()) {
+            throw new RuntimeException("Esta tarefa ja esta concluida");
+        }
+    }
+
+    public void atualizarCampos(Tarefa tarefa, DadosAtualizaTarefa dados) {
+
+    }
+
+    public void atualizarTitulo(Tarefa tarefa, String titulo) {
+        if (titulo != null) {
+            tarefa.setTitulo(titulo);
+        }
+    }
+
+    public void atualizarDescricao(Tarefa tarefa, String descricao) {
+        if (descricao != null) {
+            tarefa.setDescricao(descricao);
+        }
+    }
+
+    public void atualizarStatus(Tarefa tarefa, String status) {
+        if (status != null) {
+            tarefa.setStatus(validarStatus(status));
+        }
+    }
+
+    public void atualizarPrioridade(Tarefa tarefa, String prioridade) {
+        if (prioridade != null) {
+            tarefa.setPrioridade(validarPrioridade(prioridade));
+        }
+    }
+
+    public void atualizarPrazo(Tarefa tarefa, LocalDateTime prazo) {
+        if (prazo != null) {
+            tarefa.setPrazo(prazo);
+        }
+    }
 }
+
+

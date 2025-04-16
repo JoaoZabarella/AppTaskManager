@@ -1,6 +1,8 @@
-package com.example.taskmanager.config.exception.classes;
+package com.example.taskmanager.config.exception.classes.tarefa;
 
-public class TarefaNotFoundException extends RuntimeException {
+import com.example.taskmanager.config.exception.classes.base.NotFoundException;
+
+public class TarefaNotFoundException extends NotFoundException {
     private Long id;
 
     public TarefaNotFoundException(String criterio) {

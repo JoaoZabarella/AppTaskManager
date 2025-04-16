@@ -7,17 +7,18 @@ import com.example.taskmanager.model.*;
 import com.example.taskmanager.repository.TarefaRepository;
 import com.example.taskmanager.validator.TarefaValidatorService;
 import jakarta.transaction.Transactional;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import org.springframework.web.util.UriComponentsBuilder;
-
 import java.net.URI;
 
 @Service
 public class TarefaService {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     private final TarefaRepository tarefaRepository;
     private final TarefaValidatorService validatorService;
@@ -30,6 +31,7 @@ public class TarefaService {
 
     @Transactional
     public ResponseEntity<DadosListagemTarefa> criarTarefa(DadosCriarTarefa dados, Long usuarioId, Long categoriaId, UriComponentsBuilder uriBuilder) {
+        logger.info("Criando Tarefa");
 
         Usuario usuario = validatorService.validadorObterUsuario(usuarioId);
         Categoria categoria = validatorService.validadorObterCategoria(categoriaId);
@@ -45,6 +47,8 @@ public class TarefaService {
         tarefaRepository.save(tarefa);
 
         URI uri = uriBuilder.path("/tarefas/{id}").buildAndExpand(tarefa.getId()).toUri();
+
+        logger.info("Tarefa com ID {} criada com sucesso", tarefa.getId());
         return ResponseEntity.created(uri).body(new DadosListagemTarefa(tarefa));
     }
 
@@ -67,9 +71,11 @@ public class TarefaService {
     }
 
     @Transactional
-    public void excluirTarefa(Long id) {
+    public ResponseEntity<Void> excluirTarefa(Long id) {
         Tarefa tarefa = validatorService.validadorObterTarefa(id);
         tarefa.desativar();
+
+        return ResponseEntity.noContent().build();
     }
 
     @Transactional

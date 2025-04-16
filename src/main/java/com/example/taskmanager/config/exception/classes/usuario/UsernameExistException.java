@@ -1,4 +1,4 @@
-package com.example.taskmanager.config.exception.classes;
+package com.example.taskmanager.config.exception.classes.usuario;
 
 import lombok.Getter;
 

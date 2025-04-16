@@ -30,7 +30,6 @@ public class CategoriaServiceValidator {
         validator.validarNomeCategoriaDuplicado(nome, usuarioId);
     }
 
-
     public void atualizarCampos(Categoria categoria, DadosAtualizaCategoria dados) {
         if (dados.nome() != null && !dados.nome().equals(categoria.getNome())) {
             validarNomeCategoria(dados.nome(), categoria.getUsuario().getId());

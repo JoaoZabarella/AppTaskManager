@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             @Param("nome") String nome,
             @Param("email") String email
     );
+
+    Optional<Usuario> findByEmailIgnoreCase(String email);
 }
 
 

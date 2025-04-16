@@ -1,6 +1,8 @@
-package com.example.taskmanager.config.exception.classes;
+package com.example.taskmanager.config.exception.classes.prioridade;
 
-public class PrioridadeNotFoundException extends RuntimeException {
+import com.example.taskmanager.config.exception.classes.base.NotFoundException;
+
+public class PrioridadeNotFoundException extends NotFoundException {
     private Long id;
 
     public PrioridadeNotFoundException(String criterio) {
