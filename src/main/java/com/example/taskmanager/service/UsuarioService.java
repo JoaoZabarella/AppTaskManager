@@ -1,6 +1,6 @@
 package com.example.taskmanager.service;
 
-import com.example.taskmanager.config.exception.classes.UsuarioNotFoundException;
+import com.example.taskmanager.config.exception.classes.usuario.UsuarioNotFoundException;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import java.net.URI;
 
 
@@ -40,6 +39,7 @@ public class UsuarioService {
 
         validator.validarEmailDuplicado(dados.email());
         validator.validarNomeUsuarioExistente(dados.nome());
+        validator.validarConfirmacaoDeSenha(dados.senha(), dados.confirmaSenha());
         var usuario = UsuarioMapper.toEntity(dados, passwordEncoder);
 
         usuarioRepository.save(usuario);
@@ -50,47 +50,37 @@ public class UsuarioService {
         return ResponseEntity.created(uri).body(new DadosListagemUsuarioDTO(usuario));
     }
 
-    public Page<DadosListagemUsuarioDTO> listarDadosUsuarioAtivos(Pageable pageable) {
+    public ResponseEntity<Page<DadosListagemUsuarioDTO>> listarDadosUsuarioAtivos(Pageable pageable) {
         logger.info("Listando usuários ativos");
-        return usuarioRepository.findByAtivoTrue(pageable).map(DadosListagemUsuarioDTO::new);
+
+        Page<DadosListagemUsuarioDTO> usuarios  = usuarioRepository.findByAtivoTrue(pageable)
+                .map(DadosListagemUsuarioDTO::new);
+
+        return ResponseEntity.ok(usuarios);
     }
 
     @Transactional
-    public DadosListagemUsuarioDTO atualizarDadosUsuario(DadosAtualizaUsuario dados) {
+    public ResponseEntity<DadosListagemUsuarioDTO> atualizarDadosUsuario(DadosAtualizaUsuario dados) {
         logger.info("Atualizando dados do usuário com ID: {}", dados.id());
 
-        var usuario = usuarioRepository.findById(dados.id())
-                .orElseThrow(() -> {
-                    logger.error("Usuário não encontrado, ID: {}", dados.id());
-                    return new UsuarioNotFoundException("ID:  " + dados.id());
-                });
-
-        if (dados.nome() != null && !dados.nome().isBlank()) {
-            usuario.setNome(dados.nome());
-        }
-
-        if (dados.email() != null && !dados.email().isBlank()) {
-            usuario.setEmail(dados.email());
-        }
+        var usuario = validator.validarUsuario(dados.id());
+        validator.atualizarUsuario(usuario, dados);
 
         logger.info("Usuário com ID: {} atualizado com sucesso", dados.id());
-        return new DadosListagemUsuarioDTO(usuario);
+        return ResponseEntity.ok(new DadosListagemUsuarioDTO(usuario));
+
     }
 
     @Transactional
-    public void inativar(Long id) {
+    public ResponseEntity<Void> inativar(Long id) {
         logger.info("Inativando usuário com ID: {}", id);
-
-        var usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Usuário não encontrado para inativação, ID: {}", id);
-                    return new UsuarioNotFoundException("ID: " + id);
-                });
+        var usuario = validator.validarUsuario(id);
 
         usuario.desativar();
         usuarioRepository.save(usuario);
 
         logger.info("Usuário com ID: {} inativado com sucesso", id);
+        return ResponseEntity.noContent().build();
     }
 
     public DadosListagemUsuarioDTO buscarUsuario(Long id, String nome, String email) {

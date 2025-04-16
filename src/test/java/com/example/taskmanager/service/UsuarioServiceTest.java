@@ -1,6 +1,6 @@
 package com.example.taskmanager.service;
 
-import com.example.taskmanager.config.exception.classes.UsuarioNotFoundException;
+import com.example.taskmanager.config.exception.classes.usuario.UsuarioNotFoundException;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
@@ -59,7 +59,7 @@ class UsuarioServiceTest {
         usuario.setSenha("senha_encoded");
         usuario.setAtivo(true);
 
-        dados = new DadosCadastroUsuario("Teste Usuario", "teste@example.com", "senha_encoded");
+        dados = new DadosCadastroUsuario("Teste Usuario", "teste@example.com", "senha_encoded", "senha_encoded");
 
         uriBuilder = UriComponentsBuilder.fromHttpUrl("/");
     }
@@ -99,11 +99,11 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.findByAtivoTrue(pageable)).thenReturn(page);
 
-        Page<DadosListagemUsuarioDTO> result = usuarioService.listarDadosUsuarioAtivos(pageable);
+        ResponseEntity<Page<DadosListagemUsuarioDTO>> result = usuarioService.listarDadosUsuarioAtivos(pageable);
 
         assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        assertEquals(usuario.getId(), result.getContent().get(0).id());
+        assertEquals(1, result.getBody().getTotalElements());
+        assertEquals(usuario.getId(), result.getBody().getContent().get(0).id());
 
         verify(usuarioRepository).findByAtivoTrue(pageable);
     }
@@ -115,11 +115,11 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
-        DadosListagemUsuarioDTO result = usuarioService.atualizarDadosUsuario(dadosAtualizaUsuario);
+        ResponseEntity<DadosListagemUsuarioDTO> result = usuarioService.atualizarDadosUsuario(dadosAtualizaUsuario);
 
         assertNotNull(result);
-        assertEquals(dadosAtualizaUsuario.nome(), result.nome());
-        assertEquals(dadosAtualizaUsuario.email(), result.email());
+        assertEquals(dadosAtualizaUsuario.nome(), result.getBody().nome());
+        assertEquals(dadosAtualizaUsuario.email(), result.getBody().email());
 
         verify(usuarioRepository).findById(1L);
     }
@@ -190,7 +190,7 @@ class UsuarioServiceTest {
         verify(usuarioRepository).buscarUsuario(null, null, "email@example.com");
     }
     
-    @Test 
+    @Test
     @DisplayName("Deve buscar usuário por nome com inexistente")
     void testBuscarUsuarioPorNomeInexistente(){
         when(usuarioRepository.buscarUsuario(null, "Teste Usuario", null)).thenReturn(Optional.empty());

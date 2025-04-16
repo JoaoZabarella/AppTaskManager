@@ -1,9 +1,10 @@
-package com.example.taskmanager.config.exception.classes;
+package com.example.taskmanager.config.exception.classes.usuario;
 
+import com.example.taskmanager.config.exception.classes.base.DuplicateException;
 import lombok.Getter;
 
 @Getter
-public class EmailDuplicateException extends RuntimeException {
+public class EmailDuplicateException extends DuplicateException {
         private String email;
 
         public EmailDuplicateException(String message){

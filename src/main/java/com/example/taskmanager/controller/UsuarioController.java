@@ -4,7 +4,6 @@ import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.service.UsuarioService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,22 +29,17 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<Page<DadosListagemUsuarioDTO>> listar (@PageableDefault(page = 0, size = 10, sort ={"id"}) Pageable pageable){
-        var page = usuarioService.listarDadosUsuarioAtivos(pageable);
-        return ResponseEntity.ok(page);
+        return usuarioService.listarDadosUsuarioAtivos(pageable);
     }
 
 
     @PutMapping("/{id}")
-    @Transactional
     public ResponseEntity<DadosListagemUsuarioDTO> atualizar(@PathVariable Long id, @RequestBody @Valid DadosAtualizaUsuario dados){
-        var dadosComId = new DadosAtualizaUsuario(id, dados.nome(), dados.email());
-
-        var usuarioAtualizado = usuarioService.atualizarDadosUsuario(dadosComId);
-        return ResponseEntity.ok(usuarioAtualizado);
-
+        var dadosComId =  new DadosAtualizaUsuario(id, dados.nome(), dados.email());
+        return usuarioService.atualizarDadosUsuario(dadosComId);
     }
 
-    //Responsável pela exclusão lógica
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> inativar (@PathVariable Long id){
         usuarioService.inativar(id);

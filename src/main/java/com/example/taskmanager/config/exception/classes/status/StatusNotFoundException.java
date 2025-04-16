@@ -1,6 +1,8 @@
-package com.example.taskmanager.config.exception.classes;
+package com.example.taskmanager.config.exception.classes.status;
 
-public class StatusNotFoundException extends RuntimeException{
+import com.example.taskmanager.config.exception.classes.base.NotFoundException;
+
+public class StatusNotFoundException extends NotFoundException {
     private Long id;
 
     public StatusNotFoundException(String criterio) {
