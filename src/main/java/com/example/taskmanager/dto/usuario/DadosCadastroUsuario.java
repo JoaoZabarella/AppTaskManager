@@ -12,7 +12,7 @@ public record DadosCadastroUsuario(
         @NotBlank(message = "O campo email não pode estar em branco") @Email (message = "Digite um email válido")
         String email,
 
-        @NotBlank()
+        @NotBlank(message = "A senha não pode estar em branco ")
         @Size(min = 6, message = "A senha precisa ter mais de 6 digitos")
         String senha,
 

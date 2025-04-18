@@ -5,15 +5,14 @@ import com.example.taskmanager.config.exception.classes.categoria.CategoriaNotFo
 import com.example.taskmanager.config.exception.classes.status.StatusNotFoundException;
 import com.example.taskmanager.config.exception.classes.tarefa.TarefaNotFoundException;
 import com.example.taskmanager.config.exception.classes.usuario.*;
-import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -120,6 +119,25 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErroResponse> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> erros = new HashMap<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(erro -> {
+            String nomeCampo = erro.getField();
+            String mensagemErro = erro.getDefaultMessage();
+            erros.put(nomeCampo, mensagemErro);
+        });
+
+        Map<String, Object> detalhes = new HashMap<>();
+        detalhes.put("campos_invalidos", erros);
+        detalhes.put("total_erros", erros.size());
+
+        ErroResponse erroResponse = new ErroResponse("Erro de validação", detalhes);
+        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(StatusNotFoundException.class)
     public ResponseEntity<ErroResponse> handleStatusNaoEncontrado(StatusNotFoundException ex) {
         log.error("Status não encontrada: {}", ex.getMessage(), ex);
@@ -132,30 +150,6 @@ public class GlobalExceptionHandler {
         ErroResponse erroResponse = new ErroResponse("Status não encontrado", details);
         return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErroResponse> handleGeneralException(Exception ex) {
-        log.error("Erro inesperado: {}", ex.getMessage(), ex);
-        String sub = "Algo está faltando ser preenchido";
-
-        Map<String, Object> details = new HashMap<>();
-        details.put("SERVERERROR", sub);
-
-        ErroResponse erroResponse = new ErroResponse("Erro interno no servidor", details );
-        return new ResponseEntity<>(erroResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErroResponse> handleConstraintViolationException(ConstraintViolationException ex) {
-        log.error("Falha de validação: {}", ex.getMessage(), ex);
-        Map<String, Object> details = new HashMap<>();
-
-        details.put("Erro ao validar", ex.getMessage());
-
-        ErroResponse erroResponse = new ErroResponse("Falha na validação", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErroResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         log.error("Erro de integridade de dados no banco: {}", ex.getMessage(), ex);
