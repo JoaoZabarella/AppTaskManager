@@ -5,6 +5,7 @@ import com.example.taskmanager.dto.categoria.DadosCriarCategoria;
 import com.example.taskmanager.dto.categoria.DadosListagemCategoria;
 import com.example.taskmanager.dto.categoria.PaginaCategoriaDTO;
 import com.example.taskmanager.model.Categoria;
+import com.example.taskmanager.model.Usuario;
 import com.example.taskmanager.repository.CategoriaRepository;
 import com.example.taskmanager.validator.CategoriaServiceValidator;
 import jakarta.transaction.Transactional;
@@ -20,16 +21,18 @@ public class CategoriaService {
 
     private final CategoriaRepository repository;
     private final CategoriaServiceValidator validator;
+    private final UsuarioAutenticadoService authenticate;
 
-    public CategoriaService(CategoriaRepository repository, CategoriaServiceValidator validator) {
+    public CategoriaService(CategoriaRepository repository, CategoriaServiceValidator validator, UsuarioAutenticadoService authenticate) {
         this.repository = repository;
         this.validator = validator;
+        this.authenticate = authenticate;
     }
 
     @Transactional
-    public ResponseEntity<DadosListagemCategoria> criarCategoria(DadosCriarCategoria dados, Long usuarioId, UriComponentsBuilder uriBuilder) {
-
-        var usuario = validator.validarObterUsuario(usuarioId);
+    public ResponseEntity<DadosListagemCategoria> criarCategoria(DadosCriarCategoria dados, UriComponentsBuilder uriBuilder) {
+        Usuario usuario = authenticate.obterUsuarioAutenticado();
+        Long usuarioId = usuario.getId();
 
         validator.validarNomeCategoria(dados.nome(), usuarioId);
 
@@ -39,21 +42,22 @@ public class CategoriaService {
 
         URI uri = uriBuilder.path("/categorias/{id}").buildAndExpand(categoria.getId()).toUri();
         return ResponseEntity.created(uri).body(new DadosListagemCategoria(categoria));
-
     }
 
-    public ResponseEntity<PaginaCategoriaDTO> listarCategoriasAtivasDoUsuario(Long usuarioId, Pageable pageable) {
+    public ResponseEntity<PaginaCategoriaDTO> listarCategoriasAtivasDoUsuario (Pageable pageable) {
+        Long usuarioId = authenticate.obterIdUsuarioAutenticado();
+
         Page<DadosListagemCategoria> categoria = repository.findByUsuarioIdAndAtivoTrue(usuarioId, pageable)
                 .map(DadosListagemCategoria::new);
 
         PaginaCategoriaDTO resultado = PaginaCategoriaDTO.from(categoria);
-
         return ResponseEntity.ok(resultado);
     }
 
     @Transactional
-    public ResponseEntity<DadosListagemCategoria> atualizarCategoria(Long categoriaId, Long usuaarioId, DadosAtualizaCategoria dados){
-        var categoria = validator.validarCategoria(categoriaId, usuaarioId);
+    public ResponseEntity<DadosListagemCategoria> atualizarCategoria(Long categoriaId, DadosAtualizaCategoria dados) {
+        Long usuarioId = authenticate.obterIdUsuarioAutenticado();
+        var categoria = validator.validarCategoria(categoriaId, usuarioId);
 
         validator.atualizarCampos(categoria, dados);
         repository.save(categoria);
@@ -61,10 +65,13 @@ public class CategoriaService {
         return ResponseEntity.ok(new DadosListagemCategoria(categoria));
     }
 
+
     @Transactional
-    public void excluirCategoria(Long categoriaId, Long usuarioId) {
+    public ResponseEntity<Void> excluirCategoria(Long categoriaId) {
+        Long usuarioId = authenticate.obterIdUsuarioAutenticado();
         Categoria categoria = validator.validarCategoria(categoriaId, usuarioId);
         categoria.inativar();
+        return ResponseEntity.noContent().build();
 
     }
 }

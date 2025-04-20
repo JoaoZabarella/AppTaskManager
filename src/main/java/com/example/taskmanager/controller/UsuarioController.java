@@ -5,9 +5,6 @@ import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.service.UsuarioService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,33 +25,19 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<DadosListagemUsuarioDTO>> listar (@PageableDefault(page = 0, size = 10, sort ={"id"}) Pageable pageable){
-        return usuarioService.listarDadosUsuarioAtivos(pageable);
+    public ResponseEntity<DadosListagemUsuarioDTO> listar (){
+        return usuarioService.listarDadosUsuarioAtivos();
     }
 
-
-    @PutMapping("/{id}")
-    public ResponseEntity<DadosListagemUsuarioDTO> atualizar(@PathVariable Long id, @RequestBody @Valid DadosAtualizaUsuario dados){
-        var dadosComId =  new DadosAtualizaUsuario(id, dados.nome(), dados.email());
-        return usuarioService.atualizarDadosUsuario(dadosComId);
+    @PutMapping
+    public ResponseEntity<DadosListagemUsuarioDTO> atualizar( @RequestBody @Valid DadosAtualizaUsuario dados){
+        return usuarioService.atualizarDadosUsuario(dados);
     }
 
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> inativar (@PathVariable Long id){
-        usuarioService.inativar(id);
+    @DeleteMapping()
+    public ResponseEntity<Void> inativar (){
+        usuarioService.inativar();
         return ResponseEntity.noContent().build();
     }
 
-
-    @GetMapping("/buscar")
-    public ResponseEntity<DadosListagemUsuarioDTO> listarUsuarios(
-        @RequestParam(required = false) Long id,
-        @RequestParam(required = false) String nome,
-        @RequestParam(required = false) String email
-        ) {
-        var usuario = usuarioService.buscarUsuario(id, nome, email);
-        return ResponseEntity.ok(usuario);
-
-    }
 }

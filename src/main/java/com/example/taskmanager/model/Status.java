@@ -8,6 +8,10 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "status")
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
 public class Status {
 
         @Id

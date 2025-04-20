@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
         details.put("solucao", "Tente outro nome para essa categoria");
 
         ErroResponse erroResponse = new ErroResponse("Erro com categoria", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(erroResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(UsuarioNotFoundException.class)

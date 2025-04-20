@@ -54,11 +54,11 @@ public class EntidadeValidator {
 
     public void validarNomeCategoriaDuplicado(String nome, Long usuarioId) {
         if (categoriaRepository.existsByNomeAndUsuarioIdAndAtivoTrue(nome, usuarioId)) {
-            throw new RuntimeException("Já existe uma categoria com este nome para este usuário");
+            throw new CategoriaNameDuplicateException("Já existe uma categoria com este nome para este usuário");
         }
     }
 
-    public Tarefa validarTarefa(Long tarefaId) {
+    public Tarefa validarTarefa(Long tarefaId,Long usuarioId) {
         return tarefaRepository.findByIdAndAtivoTrue(tarefaId)
                 .orElseThrow(() -> new TarefaNotFoundException("Tarefa com ID " + tarefaId + " não encontrada"));
     }
@@ -109,58 +109,12 @@ public class EntidadeValidator {
         }
     }
 
-    public void validarNomeCategoria(String nome, Long usuarioId) {
-        if (categoriaRepository.existsByNomeAndUsuarioIdAndAtivoTrue(nome, usuarioId)) {
-            throw new CategoriaNameDuplicateException("Já existe uma categoria com o mesmo nome");
-        }
-    }
-
-    public void atualizarCategoria(Categoria categoria, DadosAtualizaCategoria dados) {
-        if (dados.nome() != null && !dados.nome().isBlank() && !dados.nome().equals(categoria.getNome())) {
-            validarNomeCategoriaDuplicado(dados.nome(), categoria.getUsuario().getId());
-            categoria.setNome(dados.nome());
-        }
-    }
-
     public void validarTarefaNaoConcluida(Tarefa tarefa) {
         if (tarefa.isConcluida()) {
             throw new RuntimeException("Esta tarefa ja esta concluida");
         }
     }
 
-    public void atualizarCampos(Tarefa tarefa, DadosAtualizaTarefa dados) {
-
-    }
-
-    public void atualizarTitulo(Tarefa tarefa, String titulo) {
-        if (titulo != null) {
-            tarefa.setTitulo(titulo);
-        }
-    }
-
-    public void atualizarDescricao(Tarefa tarefa, String descricao) {
-        if (descricao != null) {
-            tarefa.setDescricao(descricao);
-        }
-    }
-
-    public void atualizarStatus(Tarefa tarefa, String status) {
-        if (status != null) {
-            tarefa.setStatus(validarStatus(status));
-        }
-    }
-
-    public void atualizarPrioridade(Tarefa tarefa, String prioridade) {
-        if (prioridade != null) {
-            tarefa.setPrioridade(validarPrioridade(prioridade));
-        }
-    }
-
-    public void atualizarPrazo(Tarefa tarefa, LocalDateTime prazo) {
-        if (prazo != null) {
-            tarefa.setPrazo(prazo);
-        }
-    }
 }
 
 

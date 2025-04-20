@@ -1,23 +1,19 @@
 package com.example.taskmanager.dto.tarefa;
 
-import com.example.taskmanager.dto.comentario.ComentarioResponseDTO;
 import com.example.taskmanager.model.*;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public record DadosListagemTarefa(
         Long id,
         String titulo,
         String descricao,
-        Status status,
-        Prioridade prioridade,
+        String status,
+        String prioridade,
         LocalDateTime dataCriacao,
+        LocalDateTime prazo,
         LocalDateTime dataConclusao,
-        Usuario usuario,
-        Categoria categoria,
-        List<ComentarioResponseDTO> comentarios
+        String usuarioNome,
+        String categoriaNome
 ) {
 
     public DadosListagemTarefa(Tarefa tarefa) {
@@ -25,15 +21,13 @@ public record DadosListagemTarefa(
                 tarefa.getId(),
                 tarefa.getTitulo(),
                 tarefa.getDescricao(),
-                tarefa.getStatus(),
-                tarefa.getPrioridade(),
+                tarefa.getStatus() != null ? tarefa.getStatus().getTexto() : "teste",
+                tarefa.getPrioridade() != null ? tarefa.getPrioridade().getTexto() : null,
                 tarefa.getDataCriacao(),
+                tarefa.getPrazo(),
                 tarefa.getDataConclusao(),
-                tarefa.getUsuario(),
-                tarefa.getCategoria(),
-                tarefa.getComentarios() != null
-                        ? tarefa.getComentarios().stream().map(ComentarioResponseDTO::new).collect(Collectors.toList())
-                        : Collections.emptyList()
+                tarefa.getUsuario() != null ? tarefa.getUsuario().getNome() : null,
+                tarefa.getCategoria() != null ? tarefa.getCategoria().getNome() : null
         );
     }
 }
