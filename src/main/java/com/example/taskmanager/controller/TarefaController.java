@@ -1,8 +1,6 @@
 package com.example.taskmanager.controller;
 
-import com.example.taskmanager.dto.tarefa.DadosAtualizaTarefa;
-import com.example.taskmanager.dto.tarefa.DadosCriarTarefa;
-import com.example.taskmanager.dto.tarefa.DadosListagemTarefa;
+import com.example.taskmanager.dto.tarefa.*;
 import com.example.taskmanager.service.TarefaService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -26,23 +24,22 @@ public class TarefaController {
     @PostMapping
     public ResponseEntity<DadosListagemTarefa> cadastrar(
             @RequestBody @Valid DadosCriarTarefa dados,
-            @RequestParam Long usuarioId,
             @RequestParam(required = false) Long categoriaId,
             UriComponentsBuilder uriBuilder) {
-        return tarefaService.criarTarefa(dados, usuarioId, categoriaId, uriBuilder);
+        return tarefaService.criarTarefa(dados, categoriaId, uriBuilder);
     }
 
     @GetMapping("/paginado")
-    public ResponseEntity<Page<DadosListagemTarefa>> listarTarefasAtivasDoUsuario(
-            @RequestParam Long usuarioId,
+    public ResponseEntity<PaginadoTarefaDTO> listarTarefasAtivasDoUsuario(
             @PageableDefault(size = 10, sort = "dataCriacao", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
-        return tarefaService.listarTarefasAtivas(usuarioId, pageable);
+        return tarefaService.listarTarefasAtivas(pageable);
     }
-    @PutMapping("/{id}")
-    public ResponseEntity<DadosListagemTarefa> atualizar(@PathVariable Long id, @RequestBody @Valid DadosAtualizaTarefa dados){
-        return tarefaService.atualizarTarefa(id, dados);
+
+    @PutMapping("/{tarefaId}")
+    public ResponseEntity<DadosAtualizacaoTarefaResposta> atualizar(@PathVariable Long tarefaId, @RequestBody @Valid DadosAtualizaTarefa dados){
+        return tarefaService.atualizarTarefa(tarefaId, dados);
     }
 
     @PutMapping("/{id}/concluir")
@@ -50,11 +47,9 @@ public class TarefaController {
         return tarefaService.concluirTarefa(id);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarTarefa(@PathVariable Long id) {
-        tarefaService.excluirTarefa(id);
+    @DeleteMapping("/{tarefaId}")
+    public ResponseEntity<Void> arquivarTarefa(@PathVariable Long tarefaId) {
+        tarefaService.excluirTarefa(tarefaId);
         return ResponseEntity.noContent().build();
     }
-
-
 }

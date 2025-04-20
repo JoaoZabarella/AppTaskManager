@@ -26,11 +26,13 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final EntidadeValidator validator;
     private final PasswordEncoder passwordEncoder;
+    private final UsuarioAutenticadoService usuarioAutenticadoService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, EntidadeValidator validator, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository, EntidadeValidator validator, PasswordEncoder passwordEncoder, UsuarioAutenticadoService usuarioAutenticadoService) {
         this.usuarioRepository = usuarioRepository;
         this.validator = validator;
         this.passwordEncoder = passwordEncoder;
+        this.usuarioAutenticadoService = usuarioAutenticadoService;
     }
 
     @Transactional
@@ -50,20 +52,23 @@ public class UsuarioService {
         return ResponseEntity.created(uri).body(new DadosListagemUsuarioDTO(usuario));
     }
 
-    public ResponseEntity<Page<DadosListagemUsuarioDTO>> listarDadosUsuarioAtivos(Pageable pageable) {
-        logger.info("Listando usuários ativos");
+    public ResponseEntity<DadosListagemUsuarioDTO> listarDadosUsuarioAtivos() {
+        logger.info("BUSCANDO DADOS DO USUÁRIO");
 
-        Page<DadosListagemUsuarioDTO> usuarios  = usuarioRepository.findByAtivoTrue(pageable)
-                .map(DadosListagemUsuarioDTO::new);
+        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
+        logger.info("Retornando os dados do usuaário de ID {}", usuarioId);
 
-        return ResponseEntity.ok(usuarios);
+        DadosListagemUsuarioDTO dadosUsuario = new DadosListagemUsuarioDTO( validator.validarUsuario(usuarioId));
+
+        return ResponseEntity.ok(dadosUsuario);
     }
 
     @Transactional
     public ResponseEntity<DadosListagemUsuarioDTO> atualizarDadosUsuario(DadosAtualizaUsuario dados) {
+        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
         logger.info("Atualizando dados do usuário com ID: {}", dados.id());
 
-        var usuario = validator.validarUsuario(dados.id());
+        var usuario = validator.validarUsuario(usuarioId);
         validator.atualizarUsuario(usuario, dados);
 
         logger.info("Usuário com ID: {} atualizado com sucesso", dados.id());
@@ -72,27 +77,15 @@ public class UsuarioService {
     }
 
     @Transactional
-    public ResponseEntity<Void> inativar(Long id) {
-        logger.info("Inativando usuário com ID: {}", id);
-        var usuario = validator.validarUsuario(id);
+    public ResponseEntity<Void> inativar() {
+        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
+        logger.info("Inativando usuário com ID: {}", usuarioId);
+        var usuario = validator.validarUsuario(usuarioId);
 
         usuario.desativar();
         usuarioRepository.save(usuario);
 
-        logger.info("Usuário com ID: {} inativado com sucesso", id);
+        logger.info("Usuário com ID: {} inativado com sucesso", usuarioId);
         return ResponseEntity.noContent().build();
-    }
-
-    public DadosListagemUsuarioDTO buscarUsuario(Long id, String nome, String email) {
-        logger.info("Buscando usuário com critérios: ID = {}, Nome = {}, Email = {}", id, nome, email);
-        return usuarioRepository.buscarUsuario(id, nome, email)
-                .map(DadosListagemUsuarioDTO::new)
-                .orElseThrow(() -> {
-                    String criterio = (id != null) ? "Id: " + id :
-                            (nome != null) ? "Nome: " + nome :
-                                    (email != null) ? "Email: " + email : "Desconhecido";
-                    logger.error("Usuário não encontrado com critério: {}", criterio);
-                    return new UsuarioNotFoundException(criterio);
-                });
     }
 }

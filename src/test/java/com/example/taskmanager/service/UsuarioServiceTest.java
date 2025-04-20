@@ -99,13 +99,13 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.findByAtivoTrue(pageable)).thenReturn(page);
 
-        ResponseEntity<Page<DadosListagemUsuarioDTO>> result = usuarioService.listarDadosUsuarioAtivos(pageable);
+        ResponseEntity<DadosListagemUsuarioDTO> result = usuarioService.listarDadosUsuarioAtivos();
 
         assertNotNull(result);
-        assertEquals(1, result.getBody().getTotalElements());
-        assertEquals(usuario.getId(), result.getBody().getContent().get(0).id());
+        assertEquals(1, result.getBody());
+        assertEquals(usuario.getId(), result.getBody());
 
-        verify(usuarioRepository).findByAtivoTrue(pageable);
+        verify(usuarioRepository).findByAtivoTrue( pageable);
     }
 
     @Test
@@ -142,64 +142,10 @@ class UsuarioServiceTest {
     @DisplayName("Deve inativar um usuário com sucesso")
     void testInativar(){
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-
-        usuarioService.inativar(1L);
-
+        usuarioService.inativar();
         ArgumentCaptor<Usuario> usuarioCaptor = ArgumentCaptor.forClass(Usuario.class);
         verify(usuarioRepository).save(usuarioCaptor.capture());
 
         assertFalse(usuarioCaptor.getValue().isAtivo());
     }
-
-    @Test
-    @DisplayName("Deve buscar usuário por ID com sucesso")
-    void testBuscarUsuarioPorId(){
-        when(usuarioRepository.buscarUsuario(1L, null, null)).thenReturn(Optional.of(usuario));
-
-        DadosListagemUsuarioDTO result = usuarioService.buscarUsuario(1L, null, null);
-
-        assertNotNull(result);
-        assertEquals(usuario.getId(), result.id());
-        assertEquals(usuario.getNome(), result.nome());
-        assertEquals(usuario.getEmail(), result.email());
-
-        verify(usuarioRepository).buscarUsuario(1L, null, null);
-    }
-
-    @Test
-    @DisplayName("Deve lançar exceção ao buscar usuário inexistente por Id")
-    void testBuscarUsuarioIdInexistente(){
-        when(usuarioRepository.buscarUsuario(999L, null, null)).thenReturn(Optional.empty());
-
-        assertThrows(UsuarioNotFoundException.class, () -> {
-            usuarioService.buscarUsuario(999L, null, null);
-        });
-
-        verify(usuarioRepository).buscarUsuario(999L, null, null);
-    }
-
-    @Test
-    @DisplayName("Deve lançar exceção ao buscar usuário inexistente por e-mail")
-    void testBuscarUsuarioEmailInexistente(){
-        when(usuarioRepository.buscarUsuario(null, null, "email@example.com")).thenReturn(Optional.empty());
-
-        assertThrows(UsuarioNotFoundException.class, () ->{
-            usuarioService.buscarUsuario(null, null, "email@example.com");
-        });
-
-        verify(usuarioRepository).buscarUsuario(null, null, "email@example.com");
-    }
-    
-    @Test
-    @DisplayName("Deve buscar usuário por nome com inexistente")
-    void testBuscarUsuarioPorNomeInexistente(){
-        when(usuarioRepository.buscarUsuario(null, "Teste Usuario", null)).thenReturn(Optional.empty());
-
-        assertThrows(UsuarioNotFoundException.class, () -> {
-            usuarioService.buscarUsuario(null, "Teste Usuario", null);
-        });
-
-        verify(usuarioRepository).buscarUsuario(null, "Teste Usuario", null);
-    }
-
 }

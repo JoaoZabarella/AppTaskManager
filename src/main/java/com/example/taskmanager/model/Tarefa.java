@@ -74,6 +74,7 @@ public class Tarefa {
     public Tarefa(DadosCriarTarefa dados) {
         this.titulo = dados.titulo();
         this.descricao = dados.descricao();
+        this.prazo = dados.prazo();
         this.ativo = true;
     }
 

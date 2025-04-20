@@ -32,3 +32,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+# Ignorar arquivo de configuração específico
+src/main/resources/application.properties
+
+# Ignorar configuração do Flyway
+flyway.conf
+

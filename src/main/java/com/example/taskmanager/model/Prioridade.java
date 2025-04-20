@@ -8,6 +8,10 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "prioridade")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Prioridade {
 
     @Id

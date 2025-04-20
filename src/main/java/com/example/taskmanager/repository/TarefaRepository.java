@@ -13,5 +13,6 @@ import java.util.Optional;
 public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
     Page<Tarefa> findByUsuarioIdAndAtivoTrue(Long usuarioId, Pageable pageable);
     Optional<Tarefa> findByIdAndAtivoTrue(Long id);
+    Optional<Tarefa> findByIdAndUsuarioIdAndAtivoTrue(Long id, Long usuarioId );
 
 }

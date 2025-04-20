@@ -1,15 +1,14 @@
 package com.example.taskmanager.controller;
 
 import com.example.taskmanager.config.security.service.TokenService;
-import com.example.taskmanager.dto.Autenticacao.DadosAutenticacao;
-import com.example.taskmanager.dto.Autenticacao.DadosTokenJWT;
+import com.example.taskmanager.dto.autenticacao.DadosAutenticacao;
+import com.example.taskmanager.dto.autenticacao.DadosTokenJWT;
 import com.example.taskmanager.repository.UsuarioRepository;
 import com.example.taskmanager.validator.EntidadeValidator;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
