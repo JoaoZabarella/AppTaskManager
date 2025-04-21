@@ -99,7 +99,7 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.findByAtivoTrue(pageable)).thenReturn(page);
 
-        ResponseEntity<DadosListagemUsuarioDTO> result = usuarioService.listarDadosUsuarioAtivos();
+        ResponseEntity<DadosListagemUsuarioDTO> result = usuarioService.buscarUsuarioLogado();
 
         assertNotNull(result);
         assertEquals(1, result.getBody());

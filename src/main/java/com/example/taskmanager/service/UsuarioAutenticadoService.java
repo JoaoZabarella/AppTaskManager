@@ -1,7 +1,6 @@
 package com.example.taskmanager.service;
 
 import com.example.taskmanager.model.Usuario;
-import com.example.taskmanager.repository.UsuarioRepository;
 import com.example.taskmanager.validator.EntidadeValidator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,27 +9,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class UsuarioAutenticadoService {
 
-    private final UsuarioRepository repository;
     private final EntidadeValidator validator;
 
-    public UsuarioAutenticadoService(UsuarioRepository repository, EntidadeValidator validator) {
-        this.repository = repository;
+    public UsuarioAutenticadoService( EntidadeValidator validator) {
         this.validator = validator;
     }
 
     public Usuario obterUsuarioAutenticado() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if(authentication == null || !authentication.isAuthenticated()) {
+        if(auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
             throw new RuntimeException("Usuário não autenticado");
         }
 
-        Object principal = authentication.getPrincipal();
+        Object principal = auth.getPrincipal();
 
-        if(principal instanceof Usuario) {
-            return (Usuario) principal;
+        if(principal instanceof Usuario usuario) {
+            return usuario;
         } else {
-            String email = authentication.getName();
+            String email = auth.getName();
             return validator.validarEmailLogin(email);
         }
     }

@@ -21,16 +21,14 @@ public class TarefaValidatorService {
 
     private final TarefaRepository tarefaRepository;
     private final EntidadeValidator validator;
-    private final HttpMessageConverters messageConverters;
 
     public TarefaValidatorService(TarefaRepository tarefaRepository,
-                                  EntidadeValidator validator, HttpMessageConverters messageConverters) {
+                                  EntidadeValidator validator) {
         this.tarefaRepository = tarefaRepository;
         this.validator = validator;
-        this.messageConverters = messageConverters;
     }
 
-    public Tarefa validadorObterTarefa(Long tarefaId, Long usuarioId) {
+    public Tarefa validaEObterTarefa(Long tarefaId, Long usuarioId) {
         return validator.validarTarefa(tarefaId, usuarioId);
     }
 
@@ -40,21 +38,8 @@ public class TarefaValidatorService {
 
     }
 
-
     public Status validadorObterStatus(String status) {
         return validator.validarStatus(status);
-    }
-
-    public Prioridade validadorObterPrioridade(String prioridade) {
-        return validator.validarPrioridade(prioridade);
-    }
-
-    public Usuario validadorObterUsuario(Long usuarioId) {
-        return validator.validarUsuario(usuarioId);
-    }
-
-    public Categoria validadorObterCategoria(Long categoriaId) {
-        return validator.validarCategoria(categoriaId);
     }
 
     public DadosAtualizacaoTarefaResposta atualizacaoTarefaComDados(Tarefa tarefa, DadosAtualizaTarefa dados){

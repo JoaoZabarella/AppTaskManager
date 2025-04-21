@@ -1,5 +1,6 @@
 package com.example.taskmanager.config.exception;
 
+import com.example.taskmanager.config.exception.classes.auth.UsuarioNaoAutenticadoException;
 import com.example.taskmanager.config.exception.classes.categoria.CategoriaNameDuplicateException;
 import com.example.taskmanager.config.exception.classes.categoria.CategoriaNotFoundException;
 import com.example.taskmanager.config.exception.classes.status.StatusNotFoundException;
@@ -158,5 +159,19 @@ public class GlobalExceptionHandler {
         details.put("ERRO DE INTEGRAÇÃO COM O BANCO DE DADOS", ex.getMessage());
         ErroResponse erroResponse = new ErroResponse("Erro de integridade no banco de dados", details);
         return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UsuarioNaoAutenticadoException.class)
+    public ResponseEntity<ErroResponse> handleUsuarioNaoAutenticadoException(UsuarioNaoAutenticadoException ex) {
+        log.error("Usuario não esta autenticado ");
+
+        Map<String, Object> details = new HashMap<>();
+
+        details.put("motivo", "usuario não logado");
+        details.put("solucao", "Tente logar antes");
+
+        ErroResponse erroResponse = new ErroResponse("Erro no usuario autenticado", details);
+        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+        
     }
 }

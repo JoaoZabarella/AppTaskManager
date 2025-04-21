@@ -10,7 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -39,6 +42,12 @@ public class Usuario implements UserDetails {
     @Column(name = "ativo", nullable = false)
     private boolean ativo = true;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "usuario_roles", joinColumns = @JoinColumn(name = "usuario_id"))
+    @Column(name = "role")
+    private Set<String> roles = new HashSet<>();
+
+
     public Usuario(DadosCadastroUsuario dados, PasswordEncoder passwordEncoder) {
         this.nome = dados.nome();
         this.email = dados.email();
@@ -51,7 +60,24 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
+    public void adicionarRole(String role) {
+        if(this.roles == null){
+            this.roles = new HashSet<>();
+        }
+        if(!role.startsWith("ROLE_")){
+            role = "ROLE_" +role;
+        }
+        this.roles.add(role);
+    }
+
+
+    public boolean possuiRole(String role){
+        return this.roles != null && this.roles.contains(role);
     }
 
     @Override

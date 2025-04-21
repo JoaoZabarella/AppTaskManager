@@ -23,7 +23,6 @@ public class TarefaMapper {
 
     public Tarefa prepararTarefa(DadosCriarTarefa dados, Long categoriaId){
         Usuario usuario = usuarioAutenticadoService.obterUsuarioAutenticado();
-        Long usuarioId = usuario.getId();
 
         Categoria categoria = validator.validarCategoria(categoriaId);
         Status statusNovo = validator.validarStatus(dados.statusTexto());

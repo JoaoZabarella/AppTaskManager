@@ -6,6 +6,7 @@ import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -26,7 +27,7 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<DadosListagemUsuarioDTO> listar (){
-        return usuarioService.listarDadosUsuarioAtivos();
+        return usuarioService.buscarUsuarioLogado();
     }
 
     @PutMapping
@@ -35,9 +36,9 @@ public class UsuarioController {
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> inativar (){
         usuarioService.inativar();
         return ResponseEntity.noContent().build();
     }
-
 }
