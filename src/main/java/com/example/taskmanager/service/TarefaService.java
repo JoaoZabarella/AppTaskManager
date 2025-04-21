@@ -10,8 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import java.net.URI;
 
 @Service
@@ -31,10 +33,15 @@ public class TarefaService {
         this.usuarioAutenticadoService = usuarioAutenticadoService;
     }
 
+    private Long obterusuario() {
+        return usuarioAutenticadoService.obterIdUsuarioAutenticado();
+    }
+
 
     @Transactional
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<DadosListagemTarefa> criarTarefa(DadosCriarTarefa dados, Long categoriaId, UriComponentsBuilder uriBuilder) {
-        logger.info("Usuário com ID {} está criando uma tarefa", usuarioAutenticadoService.obterIdUsuarioAutenticado());
+        logger.info("Usuário com ID {} está criando uma tarefa", obterusuario());
 
         Tarefa tarefa = mapper.prepararTarefa(dados, categoriaId);
         tarefaRepository.save(tarefa);
@@ -45,25 +52,23 @@ public class TarefaService {
     }
 
 
-
     public ResponseEntity<PaginadoTarefaDTO> listarTarefasAtivas(Pageable pageable) {
         logger.info("Buscando tarefas para serem listadas");
-        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
 
-        Page<DadosListagemTarefa> tarefas = tarefaRepository.findByUsuarioIdAndAtivoTrue(usuarioId, pageable)
+
+        Page<DadosListagemTarefa> tarefas = tarefaRepository.findByUsuarioIdAndAtivoTrue(obterusuario(), pageable)
                 .map(DadosListagemTarefa::new);
         PaginadoTarefaDTO resultado = PaginadoTarefaDTO.from(tarefas);
 
-        logger.info("Tarefas do usuario com ID {} retornadas com sucesso!", usuarioId);
+        logger.info("Tarefas do usuario com ID {} retornadas com sucesso!", obterusuario());
         return ResponseEntity.ok(resultado);
 
     }
 
     @Transactional
     public ResponseEntity<DadosAtualizacaoTarefaResposta> atualizarTarefa(Long tarefaId, DadosAtualizaTarefa dados) {
-        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
 
-        var tarefa = validatorService.validadosObterTarefaDoUsuario(tarefaId, usuarioId);
+        var tarefa = validatorService.validadosObterTarefaDoUsuario(tarefaId, obterusuario());
         tarefaRepository.save(tarefa);
 
         return ResponseEntity.ok(validatorService.atualizacaoTarefaComDados(tarefa, dados));
@@ -71,16 +76,17 @@ public class TarefaService {
 
     @Transactional
     public ResponseEntity<Void> excluirTarefa(Long tarefaId) {
-        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
-        Tarefa tarefa = validatorService.validadorObterTarefa(tarefaId, usuarioId);
+        Tarefa tarefa = validatorService.validaEObterTarefa(tarefaId, obterusuario());
         tarefa.desativar();
+        tarefaRepository.save(tarefa);
         return ResponseEntity.noContent().build();
     }
 
     @Transactional
     public ResponseEntity<DadosListagemTarefa> concluirTarefa(Long tarefaId) {
-        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
-        var tarefa = validatorService.validadorObterTarefa(tarefaId, usuarioId);
+
+
+        var tarefa = validatorService.validaEObterTarefa(tarefaId, obterusuario());
         Status statusConcluido = validatorService.validadorObterStatus("Concluido");
 
         tarefa.setStatus(statusConcluido);

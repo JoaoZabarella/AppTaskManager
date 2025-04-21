@@ -21,13 +21,13 @@ public record DadosListagemTarefa(
                 tarefa.getId(),
                 tarefa.getTitulo(),
                 tarefa.getDescricao(),
-                tarefa.getStatus() != null ? tarefa.getStatus().getTexto() : "teste",
-                tarefa.getPrioridade() != null ? tarefa.getPrioridade().getTexto() : null,
+                tarefa.getStatus() != null ? tarefa.getStatus().getTexto() : "Sem status",
+                tarefa.getPrioridade() != null ? tarefa.getPrioridade().getTexto() : "Sem prioridade",
                 tarefa.getDataCriacao(),
                 tarefa.getPrazo(),
                 tarefa.getDataConclusao(),
-                tarefa.getUsuario() != null ? tarefa.getUsuario().getNome() : null,
-                tarefa.getCategoria() != null ? tarefa.getCategoria().getNome() : null
+                tarefa.getUsuario() != null ? tarefa.getUsuario().getNome() : "Usuário desconhecido",
+                tarefa.getCategoria() != null ? tarefa.getCategoria().getNome() : "Sem categoria"
         );
     }
 }

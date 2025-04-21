@@ -43,5 +43,12 @@ public class Categoria {
         this.ativo = false;
     }
 
+    public static Categoria criarParaUsuario(String nome, Usuario usuario) {
+        Categoria categoria = new Categoria(nome);
+        categoria.setUsuario(usuario);
+        return categoria;
+    }
+
+
 
 }

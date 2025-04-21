@@ -21,13 +21,11 @@ public class AutenticacaoController {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final EntidadeValidator validator;
-    private final UsuarioRepository repository;
 
-    public AutenticacaoController(AuthenticationManager authenticationManager, TokenService tokenService, EntidadeValidator validator, UsuarioRepository repository) {
+    public AutenticacaoController(AuthenticationManager authenticationManager, TokenService tokenService, EntidadeValidator validator) {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.validator = validator;
-        this.repository = repository;
     }
 
     @PostMapping("/login")

@@ -29,47 +29,46 @@ public class CategoriaService {
         this.authenticate = authenticate;
     }
 
+    public Long obterUsuario(){
+        return authenticate.obterIdUsuarioAutenticado();
+    }
+
     @Transactional
     public ResponseEntity<DadosListagemCategoria> criarCategoria(DadosCriarCategoria dados, UriComponentsBuilder uriBuilder) {
-        Usuario usuario = authenticate.obterUsuarioAutenticado();
-        Long usuarioId = usuario.getId();
+        Usuario usuarioAutenticado =  authenticate.obterUsuarioAutenticado();
 
-        validator.validarNomeCategoria(dados.nome(), usuarioId);
+        validator.validarNomeCategoria(dados.nome(), usuarioAutenticado.getId());
 
-        var categoria = new Categoria(dados.nome());
-        categoria.setUsuario(usuario);
-        repository.save(categoria);
+       var novaCategoria = Categoria.criarParaUsuario(dados.nome(), usuarioAutenticado);
+        novaCategoria.setUsuario(usuarioAutenticado);
+        repository.save(novaCategoria);
 
-        URI uri = uriBuilder.path("/categorias/{id}").buildAndExpand(categoria.getId()).toUri();
-        return ResponseEntity.created(uri).body(new DadosListagemCategoria(categoria));
+        URI uri = uriBuilder.path("/categorias/{id}").buildAndExpand(novaCategoria.getId()).toUri();
+        return ResponseEntity.created(uri).body(new DadosListagemCategoria(novaCategoria));
     }
 
     public ResponseEntity<PaginaCategoriaDTO> listarCategoriasAtivasDoUsuario (Pageable pageable) {
-        Long usuarioId = authenticate.obterIdUsuarioAutenticado();
 
-        Page<DadosListagemCategoria> categoria = repository.findByUsuarioIdAndAtivoTrue(usuarioId, pageable)
+        Page<DadosListagemCategoria> categorias = repository.findByUsuarioIdAndAtivoTrue(obterUsuario(), pageable)
                 .map(DadosListagemCategoria::new);
 
-        PaginaCategoriaDTO resultado = PaginaCategoriaDTO.from(categoria);
+        PaginaCategoriaDTO resultado = PaginaCategoriaDTO.from(categorias);
         return ResponseEntity.ok(resultado);
     }
 
     @Transactional
     public ResponseEntity<DadosListagemCategoria> atualizarCategoria(Long categoriaId, DadosAtualizaCategoria dados) {
-        Long usuarioId = authenticate.obterIdUsuarioAutenticado();
-        var categoria = validator.validarCategoria(categoriaId, usuarioId);
+
+        var categoria = validator.validarCategoria(categoriaId, obterUsuario());
 
         validator.atualizarCampos(categoria, dados);
-        repository.save(categoria);
 
         return ResponseEntity.ok(new DadosListagemCategoria(categoria));
     }
 
-
     @Transactional
     public ResponseEntity<Void> excluirCategoria(Long categoriaId) {
-        Long usuarioId = authenticate.obterIdUsuarioAutenticado();
-        Categoria categoria = validator.validarCategoria(categoriaId, usuarioId);
+        Categoria categoria = validator.validarCategoria(categoriaId, obterUsuario());
         categoria.inativar();
         return ResponseEntity.noContent().build();
 
