@@ -1,12 +1,13 @@
 package com.example.taskmanager.controller;
 
+import com.example.taskmanager.dto.usuario.AlterarSenhaDTO;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.service.UsuarioService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -25,20 +26,24 @@ public class UsuarioController {
         return usuarioService.cadastraUsuario(dadosCadastro, uriBuilder);
     }
 
-    @GetMapping
+    @GetMapping("/me")
     public ResponseEntity<DadosListagemUsuarioDTO> listar (){
         return usuarioService.buscarUsuarioLogado();
     }
 
-    @PutMapping
+    @PutMapping("/me")
     public ResponseEntity<DadosListagemUsuarioDTO> atualizar( @RequestBody @Valid DadosAtualizaUsuario dados){
         return usuarioService.atualizarDadosUsuario(dados);
     }
 
-    @DeleteMapping()
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> inativar (){
-        usuarioService.inativar();
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> inativar(){
+        return usuarioService.inativar();
+    }
+
+    @PutMapping("/me/alterar-senha")
+    @Transactional
+    public ResponseEntity<Void> alterarSenha(@RequestBody @Valid AlterarSenhaDTO dto){
+        return usuarioService.alterarSenha(dto);
     }
 }

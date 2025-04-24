@@ -1,5 +1,6 @@
 package com.example.taskmanager.config.exception;
 
+import com.example.taskmanager.config.exception.classes.auth.CredenciaisInvalidasException;
 import com.example.taskmanager.config.exception.classes.auth.UsuarioNaoAutenticadoException;
 import com.example.taskmanager.config.exception.classes.categoria.CategoriaNameDuplicateException;
 import com.example.taskmanager.config.exception.classes.categoria.CategoriaNotFoundException;
@@ -22,109 +23,86 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    private ResponseEntity<ErroResponse> createErrorResponse(String message, Map<String, Object> details, HttpStatus status) {
+        ErroResponse erroResponse = new ErroResponse(message, details);
+        return new ResponseEntity<>(erroResponse, status);
+    }
 
     @ExceptionHandler(EmailDuplicateException.class)
     public ResponseEntity<ErroResponse> handleEmailDuplicateException(EmailDuplicateException ex) {
         log.error("Email já cadastrado: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("motivo","Este email já está registrado em nossa base de dados");
+        details.put("motivo", "Este email já está registrado em nossa base de dados");
         details.put("solucao", "Tente outro email ou recupere a senha");
-
-        ErroResponse erroResponse = new ErroResponse("Erro com email", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+        return createErrorResponse("Erro com email", details, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UsernameExistException.class)
     public ResponseEntity<ErroResponse> handleUsernameExistException(UsernameExistException ex) {
-        log.error("Nome de usuário ja em uso: {}", ex.getMessage(), ex);
+        log.error("Nome de usuário já em uso: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("motivo","Este nome ja esta em uso atualmente");
+        details.put("motivo", "Este nome já está em uso atualmente");
         details.put("solucao", "Tente outro nome de usuário");
-
-        ErroResponse erroResponse = new ErroResponse("Erro com username", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+        return createErrorResponse("Erro com username", details, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(PasswordConfirmationException.class)
     public ResponseEntity<ErroResponse> handlePasswordConfirmationException(PasswordConfirmationException ex) {
-        log.error("Senha não confere com confirmação {}", ex.getMessage(), ex);
+        log.error("Senha não confere com confirmação: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("motivo","A confirmação de senha não é igual a senha");
-        details.put("solucao", "Tente colocar a confirmação de senha idêntica a senha");
-
-        ErroResponse erroResponse = new ErroResponse("Erro com a confirmação de senha", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+        details.put("motivo", "A confirmação de senha não é igual a senha");
+        details.put("solucao", "Tente colocar a confirmação de senha idêntica à senha");
+        return createErrorResponse("Erro com a confirmação de senha", details, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EmailNotFoundException.class)
     public ResponseEntity<ErroResponse> handleEmailNotFoundException(EmailNotFoundException ex) {
         log.error("Email não cadastrado: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("motivo","Este não foi cadastrado ainda");
-        details.put("solucao", "Tente registar esse email antes de realizar o login");
-
-        ErroResponse erroResponse = new ErroResponse("Erro com email para login", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+        details.put("motivo", "Este email não foi cadastrado ainda");
+        details.put("solucao", "Tente registrar esse email antes de realizar o login");
+        return createErrorResponse("Erro com email para login", details, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(CategoriaNameDuplicateException.class)
     public ResponseEntity<ErroResponse> handleCategoriaNameDuplicateException(CategoriaNameDuplicateException ex) {
         log.error("Já existe uma categoria com esse nome: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("motivo","Já existe uma categoria com esse nome");
+        details.put("motivo", "Já existe uma categoria com esse nome");
         details.put("solucao", "Tente outro nome para essa categoria");
-
-        ErroResponse erroResponse = new ErroResponse("Erro com categoria", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.CONFLICT);
+        return createErrorResponse("Erro com categoria", details, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(UsuarioNotFoundException.class)
     public ResponseEntity<ErroResponse> handleUsuarioNaoEncontrado(UsuarioNotFoundException ex) {
         log.error("Usuário não encontrado: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-
-        details.put("motivo","Este usuário não foi encontrado");
+        details.put("motivo", "Este usuário não foi encontrado");
         details.put("solucao", "Tente buscar por outro usuário");
-
-        ErroResponse erroResponse = new ErroResponse("Usuário não encontrado", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+        return createErrorResponse("Usuário não encontrado", details, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(CategoriaNotFoundException.class)
     public ResponseEntity<ErroResponse> handleCategoriaNaoEncontrada(CategoriaNotFoundException ex) {
         log.error("Categoria não encontrada: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("motivo","Esta categoria não foi localizada");
+        details.put("motivo", "Esta categoria não foi localizada");
         details.put("solucao", "Tente buscar por outra categoria");
-
-        ErroResponse erroResponse = new ErroResponse("Categoria não encontrada", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+        return createErrorResponse("Categoria não encontrada", details, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(TarefaNotFoundException.class)
     public ResponseEntity<ErroResponse> handleTarefaNaoEncontrada(TarefaNotFoundException ex) {
         log.error("Tarefa não encontrada: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("motivo","Esta tarefa não foi localizada");
+        details.put("motivo", "Esta tarefa não foi localizada");
         details.put("solucao", "Tente buscar outra tarefa");
-        ErroResponse erroResponse = new ErroResponse("Tarefa não encontrada", details);
-
-        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+        return createErrorResponse("Tarefa não encontrada", details, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErroResponse> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErroResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> erros = new HashMap<>();
-
         ex.getBindingResult().getFieldErrors().forEach(erro -> {
             String nomeCampo = erro.getField();
             String mensagemErro = erro.getDefaultMessage();
@@ -135,43 +113,52 @@ public class GlobalExceptionHandler {
         detalhes.put("campos_invalidos", erros);
         detalhes.put("total_erros", erros.size());
 
-        ErroResponse erroResponse = new ErroResponse("Erro de validação", detalhes);
-        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+        return createErrorResponse("Erro de validação", detalhes, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(StatusNotFoundException.class)
     public ResponseEntity<ErroResponse> handleStatusNaoEncontrado(StatusNotFoundException ex) {
-        log.error("Status não encontrada: {}", ex.getMessage(), ex);
-
+        log.error("Status não encontrado: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("motivo","Este status não foi localizado");
+        details.put("motivo", "Este status não foi localizado");
         details.put("solucao", "Tente buscar por outro Status");
-
-        ErroResponse erroResponse = new ErroResponse("Status não encontrado", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
+        return createErrorResponse("Status não encontrado", details, HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErroResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         log.error("Erro de integridade de dados no banco: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("ERRO DE INTEGRAÇÃO COM O BANCO DE DADOS", ex.getMessage());
-        ErroResponse erroResponse = new ErroResponse("Erro de integridade no banco de dados", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.BAD_REQUEST);
+        details.put("motivo", "Erro interno do sistema");
+        details.put("solucao", "Tente novamente mais tarde ou entre em contato com o suporte.");
+        return createErrorResponse("Erro de integridade no banco de dados", details, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UsuarioNaoAutenticadoException.class)
     public ResponseEntity<ErroResponse> handleUsuarioNaoAutenticadoException(UsuarioNaoAutenticadoException ex) {
-        log.error("Usuario não esta autenticado ");
-
+        log.error("Usuário não está autenticado: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
-
-        details.put("motivo", "usuario não logado");
+        details.put("motivo", "Usuário não logado");
         details.put("solucao", "Tente logar antes");
-
-        ErroResponse erroResponse = new ErroResponse("Erro no usuario autenticado", details);
-        return new ResponseEntity<>(erroResponse, HttpStatus.NOT_FOUND);
-        
+        return createErrorResponse("Erro no usuário autenticado", details, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(PasswordNotActualException.class)
+    public ResponseEntity<ErroResponse> handlePasswordNotActualException(PasswordNotActualException ex) {
+        log.error("Senha não confere: {}", ex.getMessage(), ex);
+        Map<String, Object> details = new HashMap<>();
+        details.put("motivo", "Senha não confere");
+        details.put("solucao", "Tente novamente com a senha correta");
+        return createErrorResponse("Erro com a senha atual", details, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CredenciaisInvalidasException.class)
+    public ResponseEntity<ErroResponse> handleCredenciaisInvalidasException(CredenciaisInvalidasException ex) {
+        log.error("Credenciais inválidas: {}", ex.getMessage(), ex);
+        Map<String, Object> details = new HashMap<>();
+        details.put("motivo", "O email ou a senha estão incorretos");
+        details.put("solucao", "Verifique suas credenciais e tente novamente");
+        return createErrorResponse("Erro de autenticação", details, HttpStatus.UNAUTHORIZED);
+    }
+
 }

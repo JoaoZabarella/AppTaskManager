@@ -5,15 +5,8 @@ import lombok.Getter;
 
 @Getter
 public class EmailDuplicateException extends DuplicateException {
-        private String email;
-
         public EmailDuplicateException(String message){
             super(message);
-        }
-
-        public EmailDuplicateException(String email, String message){
-            super(message);
-            this.email = email;
         }
 
 }

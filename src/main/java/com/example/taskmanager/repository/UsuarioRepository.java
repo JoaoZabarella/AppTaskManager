@@ -19,18 +19,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Boolean existsByEmailIgnoreCase(String email);
     Boolean existsByNomeIgnoreCase(String nome);
     Optional<Usuario> findByIdAndAtivoTrue(Long id);
-
-
-    @Query("SELECT DISTINCT u FROM Usuario u WHERE " +
-            "((COALESCE(:id, NULL) IS NULL OR u.id = :id) OR " +
-            "(COALESCE(:nome, NULL) IS NULL OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) OR " +
-            "(COALESCE(:email, NULL) IS NULL OR LOWER(u.email) = LOWER(:email))) " +
-            "AND u.ativo = true")
-    Optional<Usuario> buscarUsuario(
-            @Param("id") Long id,
-            @Param("nome") String nome,
-            @Param("email") String email
-    );
+    Page<Usuario> findByNomeContainingIgnoreCaseOrEmailContainingIgnoreCase(String nome, String email, Pageable pageable);
 
     Optional<Usuario> findByEmailIgnoreCase(String email);
 }

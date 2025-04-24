@@ -1,16 +1,17 @@
 package com.example.taskmanager.service;
 
 import com.example.taskmanager.config.security.RoleConst;
+import com.example.taskmanager.dto.usuario.AlterarSenhaDTO;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.mapper.UsuarioMapper;
+import com.example.taskmanager.model.Usuario;
 import com.example.taskmanager.repository.UsuarioRepository;
 import com.example.taskmanager.validator.EntidadeValidator;
 import jakarta.transaction.Transactional;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -27,11 +28,20 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final UsuarioAutenticadoService usuarioAutenticadoService;
 
+
+    private Usuario getUsuarioLogado(){
+        return validator.validarUsuario(obterUsuario());
+    }
+
     public UsuarioService(UsuarioRepository usuarioRepository, EntidadeValidator validator, PasswordEncoder passwordEncoder, UsuarioAutenticadoService usuarioAutenticadoService) {
         this.usuarioRepository = usuarioRepository;
         this.validator = validator;
         this.passwordEncoder = passwordEncoder;
         this.usuarioAutenticadoService = usuarioAutenticadoService;
+    }
+
+    public Long obterUsuario(){
+        return usuarioAutenticadoService.obterIdUsuarioAutenticado();
     }
 
     @Transactional
@@ -53,60 +63,49 @@ public class UsuarioService {
     }
 
     public ResponseEntity<DadosListagemUsuarioDTO> buscarUsuarioLogado() {
-        logger.info("BUSCANDO DADOS DO USUÁRIO");
+        logger.info("Retornando os dados do usuaário de ID {}", obterUsuario());
 
-        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
-        logger.info("Retornando os dados do usuaário de ID {}", usuarioId);
-
-        DadosListagemUsuarioDTO dadosUsuario = new DadosListagemUsuarioDTO( validator.validarUsuario(usuarioId));
-
+        DadosListagemUsuarioDTO dadosUsuario = new DadosListagemUsuarioDTO(getUsuarioLogado());
         return ResponseEntity.ok(dadosUsuario);
     }
 
     @Transactional
     public ResponseEntity<DadosListagemUsuarioDTO> atualizarDadosUsuario(DadosAtualizaUsuario dados) {
-        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
-        logger.info("Atualizando dados do usuário com ID: {}", usuarioId);
+        logger.info("Atualizando dados do usuário com ID: {}", obterUsuario());
 
-        var usuario = validator.validarUsuario(usuarioId);
-        validator.atualizarUsuario(usuario, dados);
+        validator.atualizarUsuario(getUsuarioLogado(), dados);
 
         logger.info("Usuário com ID: {} atualizado com sucesso", dados.id());
-        return ResponseEntity.ok(new DadosListagemUsuarioDTO(usuario));
+        return ResponseEntity.ok(new DadosListagemUsuarioDTO(getUsuarioLogado()));
 
     }
 
     @Transactional
     public ResponseEntity<Void> inativar() {
-        Long usuarioId = usuarioAutenticadoService.obterIdUsuarioAutenticado();
-        logger.info("Inativando usuário com ID: {}", usuarioId);
-        var usuario = validator.validarUsuario(usuarioId);
+        logger.info("Inativando usuário com ID: {}", obterUsuario());
 
-        usuario.desativar();
-        usuarioRepository.save(usuario);
 
-        logger.info("Usuário com ID: {} inativado com sucesso", usuarioId);
+        getUsuarioLogado().desativar();
+        usuarioRepository.save(getUsuarioLogado());
+
+        logger.info("Usuário com ID: {} inativado com sucesso", obterUsuario());
         return ResponseEntity.noContent().build();
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<DadosListagemUsuarioDTO> promoverParaAdmin(Long usuarioId){
-        var usuario = validator.validarUsuario(usuarioId);
-        usuario.adicionarRole("ROLE_ADMIN");
-        usuarioRepository.save(usuario);
-        return ResponseEntity.ok(new DadosListagemUsuarioDTO(usuario));
+    public ResponseEntity<Void> alterarSenha(AlterarSenhaDTO dados){
+
+        validator.validarSenhaAtual(dados.senhaAtual(), getUsuarioLogado().getSenha());
+        validator.validarConfirmacaoSenha(dados.novaSenha(), dados.confirmaSenha());
+
+        String senhaCodificada = passwordEncoder.encode(dados.novaSenha());
+        getUsuarioLogado().setSenha(senhaCodificada);
+        usuarioRepository.save(getUsuarioLogado());
+        return ResponseEntity.noContent().build();
+
     }
 
-    @Transactional
-    public void inativarUsuarioComoAdmin(Long usuarioId){
-        logger.info("Administrador inativando usuário com ID: {}", usuarioId);
-        var usuario = validator.validarUsuario(usuarioId);
 
-        usuario.desativar();
-        usuarioRepository.save(usuario);
 
-        logger.info("Usuário com ID: {} excluido com sucesso", usuarioId);
-    }
 
 }

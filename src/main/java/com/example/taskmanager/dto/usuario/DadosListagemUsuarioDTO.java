@@ -6,15 +6,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.Set;
+
 
 public record DadosListagemUsuarioDTO(
         Long id,
         String nome,
-        String email
+        String email,
+        LocalDateTime dataCriacao,
+        Boolean ativo,
+        Set<String> roles
+
 
 ) {
-
     public DadosListagemUsuarioDTO(Usuario usuario){
-        this(usuario.getId(),usuario.getNome(),usuario.getEmail());
+        this(usuario.getId(),usuario.getNome(),usuario.getEmail(), usuario.getDataCriacao(), usuario.isAtivo(), usuario.getRoles());
     }
 }

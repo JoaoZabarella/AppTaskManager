@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,6 +56,8 @@ public class Usuario implements UserDetails {
     public void desativar() {
         this.ativo = false;
     }
+    public void ativar() {
+        this.ativo = true;}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -75,6 +76,12 @@ public class Usuario implements UserDetails {
         this.roles.add(role);
     }
 
+    public void removerRole(String role) {
+        if (this.roles == null || !this.roles.contains(role)) {
+            return;
+        }
+        this.roles.remove(role);
+    }
 
     public boolean possuiRole(String role){
         return this.roles != null && this.roles.contains(role);

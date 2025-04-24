@@ -10,10 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import java.net.URI;
 
 @Service
@@ -39,7 +37,6 @@ public class TarefaService {
 
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<DadosListagemTarefa> criarTarefa(DadosCriarTarefa dados, Long categoriaId, UriComponentsBuilder uriBuilder) {
         logger.info("Usuário com ID {} está criando uma tarefa", obterusuario());
 
