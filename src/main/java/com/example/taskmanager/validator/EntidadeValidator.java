@@ -6,13 +6,13 @@ import com.example.taskmanager.config.exception.classes.prioridade.PrioridadeNot
 import com.example.taskmanager.config.exception.classes.status.StatusNotFoundException;
 import com.example.taskmanager.config.exception.classes.tarefa.TarefaNotFoundException;
 import com.example.taskmanager.config.exception.classes.usuario.*;
-import com.example.taskmanager.dto.categoria.DadosAtualizaCategoria;
-import com.example.taskmanager.dto.tarefa.DadosAtualizaTarefa;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.model.*;
 import com.example.taskmanager.repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import java.time.LocalDateTime;
 
 @Component
 public class EntidadeValidator {
@@ -21,17 +21,24 @@ public class EntidadeValidator {
     private final TarefaRepository tarefaRepository;
     private final StatusRepository statusRepository;
     private final PrioridadeRepository prioridadeRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public EntidadeValidator(UsuarioRepository usuarioRepository, CategoriaRepository categoriaRepository, TarefaRepository tarefaRepository, StatusRepository statusRepository, PrioridadeRepository prioridadeRepository) {
+    public EntidadeValidator(UsuarioRepository usuarioRepository, CategoriaRepository categoriaRepository, TarefaRepository tarefaRepository, StatusRepository statusRepository, PrioridadeRepository prioridadeRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.categoriaRepository = categoriaRepository;
         this.tarefaRepository = tarefaRepository;
         this.statusRepository = statusRepository;
         this.prioridadeRepository = prioridadeRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario validarUsuario(Long usuarioId) {
         return usuarioRepository.findByIdAndAtivoTrue(usuarioId)
+                .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
+    }
+
+    public Usuario validarUsuarioInativado(Long usuarioId) {
+        return usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
     }
 
@@ -113,6 +120,37 @@ public class EntidadeValidator {
         if (tarefa.isConcluida()) {
             throw new RuntimeException("Esta tarefa ja esta concluida");
         }
+    }
+
+    public void validarSenhaAtual(String senhaAtual, String senhaCodificada){
+        if(!passwordEncoder.matches(senhaAtual, senhaCodificada)){
+            throw new PasswordNotActualException("Senha atual incorreta");
+        }
+    }
+    public void validarConfirmacaoSenha(String novaSenha, String confirmacaoSenha) {
+        if(!novaSenha.equals(confirmacaoSenha)){
+            throw new PasswordConfirmationException("A nova senha e a confirmação não são iguais");
+        }
+    }
+
+    public void validarUsuarioAdmin(Usuario usuario) {
+        if(usuario.getRoles().contains("ROLE_ADMIN")){
+            throw new RuntimeException("Este usuario já é admin");
+        }
+    }
+
+    public Page<Usuario> validarBusca(String filtro, Pageable pageable) {
+        if (filtro == null || filtro.trim().isEmpty()) {
+            return usuarioRepository.findAll(pageable);
+        }
+
+        Page<Usuario> usuarios = usuarioRepository.findByNomeContainingIgnoreCaseOrEmailContainingIgnoreCase(filtro, filtro, pageable);
+
+        if(usuarios.isEmpty()){
+            throw new RuntimeException("Nenhum usuario encontrado com o filtro informado");
+        }
+
+        return usuarios;
     }
 
 }

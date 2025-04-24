@@ -1,4 +1,5 @@
 package com.example.taskmanager.config.security.service;
+import com.example.taskmanager.config.exception.classes.auth.CredenciaisInvalidasException;
 import com.example.taskmanager.repository.UsuarioRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +25,7 @@ public class AutenticacaoService implements UserDetailsService {
                         usuario.getEmail(),
                         usuario.getSenha(),
                         Collections.emptyList()))
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new CredenciaisInvalidasException("Credenciais Invalidas"));
     }
 }
 

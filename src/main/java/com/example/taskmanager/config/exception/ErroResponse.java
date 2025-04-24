@@ -10,9 +10,9 @@ import java.util.Map;
 @NoArgsConstructor
 public class ErroResponse {
     private String message;
-    private Map details;
+    private Map<String, Object> details;
 
-    public ErroResponse(String message, Map details) {
+    public ErroResponse(String message, Map<String, Object> details) {
         this.message = message;
         this.details = details;
     }

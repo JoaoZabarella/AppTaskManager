@@ -1,32 +1,44 @@
 package com.example.taskmanager.controller;
 
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
-import com.example.taskmanager.service.UsuarioService;
+import com.example.taskmanager.dto.usuario.PaginaUsuarioDTO;
+import com.example.taskmanager.service.AdminService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final UsuarioService usuarioService;
+    private final AdminService service;
 
-    public AdminController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
+    public AdminController(AdminService service) {
+        this.service = service;
     }
+
 
     @PostMapping("/usuarios/{id}/promover")
     public ResponseEntity<DadosListagemUsuarioDTO> promoverParaAdmin(@PathVariable Long id) {
-        return usuarioService.promoverParaAdmin(id);
+        return service.promoverParaAdmin(id);
     }
 
     @DeleteMapping("/usuarios/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<DadosListagemUsuarioDTO> inativarUsuario(@PathVariable Long id) {
-        usuarioService.inativarUsuarioComoAdmin(id);
+        service.inativarUsuarioComoAdmin(id);
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/usuarios")
+    public ResponseEntity<PaginaUsuarioDTO> buscarUsuarios(@RequestParam String filtro,
+                                                           @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+        return ResponseEntity.ok(service.buscarUsuariosPorNoemOuEmail(filtro, pageable));
+    }
 
+    @PutMapping("/usuarios/{id}/ativar")
+    public ResponseEntity<Void> ativarUsuario(@PathVariable Long id) {
+        service.reativarUsuario(id);
+        return ResponseEntity.ok().build();
+    }
 }

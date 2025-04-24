@@ -5,3 +5,5 @@ CREATE TABLE usuario_roles (
                                PRIMARY KEY (usuario_id, role),
                                FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
+
+
