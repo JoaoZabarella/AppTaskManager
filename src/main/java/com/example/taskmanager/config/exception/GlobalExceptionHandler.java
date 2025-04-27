@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+
+import javax.management.ListenerNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -98,6 +100,15 @@ public class GlobalExceptionHandler {
         details.put("motivo", "Esta tarefa não foi localizada");
         details.put("solucao", "Tente buscar outra tarefa");
         return createErrorResponse("Tarefa não encontrada", details, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ListenerNotFoundException.class)
+    public ResponseEntity<ErroResponse> handleListenerNotFoundException(ListenerNotFoundException ex) {
+        log.error("A lista de tarefas está vazia : {} ", ex.getMessage(), ex);
+        Map<String, Object> details = new HashMap<>();
+        details.put("motivo", "A lista de tarefas está vazia");
+        details.put("solucao", "Tente adicionar tarefas na lista");
+        return createErrorResponse("Lista de tarefas vazias", details, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

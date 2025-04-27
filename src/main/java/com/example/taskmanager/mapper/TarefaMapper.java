@@ -1,6 +1,7 @@
 package com.example.taskmanager.mapper;
 
 import com.example.taskmanager.dto.tarefa.DadosCriarTarefa;
+import com.example.taskmanager.dto.tarefa.FiltrosStatusPrioridadeCategoriaDTO;
 import com.example.taskmanager.model.*;
 import com.example.taskmanager.service.UsuarioAutenticadoService;
 import com.example.taskmanager.validator.EntidadeValidator;
@@ -21,16 +22,17 @@ public class TarefaMapper {
     }
 
 
-    public Tarefa prepararTarefa(DadosCriarTarefa dados, Long categoriaId){
+    public Tarefa prepararTarefa(DadosCriarTarefa dados){
         Usuario usuario = usuarioAutenticadoService.obterUsuarioAutenticado();
 
-        Categoria categoria = validator.validarCategoria(categoriaId);
-        Status statusNovo = validator.validarStatus(dados.statusTexto());
-        Prioridade prioridadeNovo = validator.validarPrioridade(dados.prioridadeTexto());
+
+        Categoria categoria = dados.categoriaId() !=null ? validator.validarCategoria(dados.categoriaId()) : null;
+        Status status = validator.validarStatus(dados.statusId());
+        Prioridade prioridade = validator.validarPrioridade(dados.prioridadeId());
 
         Tarefa tarefa = new Tarefa(dados);
-        tarefa.setStatus(statusNovo);
-        tarefa.setPrioridade(prioridadeNovo);
+        tarefa.setStatus(status);
+        tarefa.setPrioridade(prioridade);
         tarefa.setUsuario(usuario);
         tarefa.setCategoria(categoria);
 
@@ -39,6 +41,12 @@ public class TarefaMapper {
 
     public URI construirUri(Tarefa tarefa, UriComponentsBuilder uriBuilder){
         return uriBuilder.path("/tarefas/{id}").buildAndExpand(tarefa.getId()).toUri();
+    }
+
+    public boolean filtroVazio(FiltrosStatusPrioridadeCategoriaDTO filtro){
+        return (filtro.statusId() == null ) &&
+                (filtro.prioridadeId() == null) &&
+                filtro.categoriaId() == null;
     }
 
 }

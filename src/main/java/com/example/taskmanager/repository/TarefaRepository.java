@@ -5,8 +5,11 @@ import com.example.taskmanager.model.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,4 +18,24 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
     Optional<Tarefa> findByIdAndAtivoTrue(Long id);
     Optional<Tarefa> findByIdAndUsuarioIdAndAtivoTrue(Long id, Long usuarioId );
 
+    @Query("SELECT t from Tarefa t WHERE t.id IN :ids AND t.usuario.id = :usuarioId AND t.ativo = true")
+    List<Tarefa> findAllByIdsAndUsuarioIdAndAtivoTrue(@Param("ids") List<Long> ids, @Param("usuarioId") Long usuarioId);
+
+    @Query("SELECT t FROM Tarefa t WHERE t.id IN :ids AND t.usuario.id = :usuarioId")
+    List<Tarefa> findAllByIdsAndUsuarioId(@Param("ids") List<Long> ids, @Param("usuarioId") Long usuarioId);
+
+    @Query(value = "SELECT t FROM Tarefa t WHERE t.usuario.id = :usuarioId AND t.ativo = true " +
+            "AND (:statusId IS NULL OR t.status.id = :statusId) " +
+            "AND (:prioridadeId IS NULL OR t.prioridade.id = :prioridadeId) " +
+            "AND (:categoriaId IS NULL OR t.categoria.id = :categoriaId)",
+            countQuery = "SELECT COUNT(t) FROM Tarefa t WHERE t.usuario.id = :usuarioId AND t.ativo = true " +
+                    "AND (:statusId IS NULL OR t.status.id = :statusId) " +
+                    "AND (:prioridadeId IS NULL OR t.prioridade.id = :prioridadeId) " +
+                    "AND (:categoriaId IS NULL OR t.categoria.id = :categoriaId)")
+    Page<Tarefa> buscarComFiltros(
+            @Param("usuarioId") Long usuarioId,
+            @Param("statusId") Long statusId,
+            @Param("prioridadeId") Long prioridadeId,
+            @Param("categoriaId") Long categoriaId,
+            Pageable pageable);
 }

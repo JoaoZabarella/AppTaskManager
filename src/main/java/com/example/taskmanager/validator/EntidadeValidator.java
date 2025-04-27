@@ -14,6 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class EntidadeValidator {
     private final UsuarioRepository usuarioRepository;
@@ -42,42 +45,11 @@ public class EntidadeValidator {
                 .orElseThrow(() -> new UsuarioNotFoundException(usuarioId));
     }
 
-    public Categoria validarCategoria(Long categoriaId) {
-        if (categoriaId == null) {
-            return null;
+
+    public void validarNomeUsuarioExistente(String nome) {
+        if (usuarioRepository.existsByNomeIgnoreCase(nome)) {
+            throw new UsernameExistException("Este nome de usuário ja esta em uso");
         }
-        return categoriaRepository.findById(categoriaId)
-                .orElseThrow(() -> new CategoriaNotFoundException("ID " + categoriaId));
-    }
-
-    public Categoria validarCategoriaDoUsuario(Long categoriaId, Long usuarioId) {
-        if (categoriaId == null) {
-            return null;
-        }
-        return categoriaRepository.findByIdAndUsuarioIdAndAtivoTrue(categoriaId, usuarioId)
-                .orElseThrow(() -> new CategoriaNotFoundException("Categoria ID " + categoriaId +
-                        "Não encontrada ou não pertence ao usuário de ID: " + usuarioId));
-    }
-
-    public void validarNomeCategoriaDuplicado(String nome, Long usuarioId) {
-        if (categoriaRepository.existsByNomeAndUsuarioIdAndAtivoTrue(nome, usuarioId)) {
-            throw new CategoriaNameDuplicateException("Já existe uma categoria com este nome para este usuário");
-        }
-    }
-
-    public Tarefa validarTarefa(Long tarefaId,Long usuarioId) {
-        return tarefaRepository.findByIdAndAtivoTrue(tarefaId)
-                .orElseThrow(() -> new TarefaNotFoundException("Tarefa com ID " + tarefaId + " não encontrada"));
-    }
-
-    public Status validarStatus(String statusTexto) {
-        return statusRepository.findByTextoIgnoreCase(statusTexto)
-                .orElseThrow(() -> new StatusNotFoundException("Status com o nome de: " + statusTexto + " não encontarado"));
-    }
-
-    public Prioridade validarPrioridade(String prioridadeTexto) {
-        return prioridadeRepository.findByTextoIgnoreCase(prioridadeTexto)
-                .orElseThrow(() -> new PrioridadeNotFoundException("Prioridade com o nome de: " + prioridadeTexto + " não encontrado"));
     }
 
     public void validarEmailDuplicado(String email) {
@@ -86,40 +58,15 @@ public class EntidadeValidator {
         }
     }
 
-    public void validarNomeUsuarioExistente(String nome) {
-        if (usuarioRepository.existsByNomeIgnoreCase(nome)) {
-            throw new UsernameExistException("Este nome de usuário ja esta em uso");
-        }
-    }
-
-    public Usuario validarEmailLogin(String email) {
-        return usuarioRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new EmailNotFoundException("Email não cadastrado: " + email));
-    }
-
     public void validarConfirmacaoDeSenha(String senha, String confirmaSenha) {
         if (!senha.equals(confirmaSenha)) {
             throw new PasswordConfirmationException("A confirmação de senha não é igual a senha");
         }
     }
 
-    public void atualizarUsuario(Usuario usuario, DadosAtualizaUsuario dados) {
-
-        if (dados.nome() != null && !dados.nome().isBlank() && !dados.nome().equals(usuario.getNome())) {
-            validarNomeUsuarioExistente(dados.nome());
-            usuario.setNome(dados.nome());
-        }
-
-        if (dados.email() != null && !dados.email().isBlank() && !dados.email().equals(usuario.getEmail())) {
-            validarEmailDuplicado(dados.email());
-            usuario.setEmail(dados.email());
-        }
-    }
-
-    public void validarTarefaNaoConcluida(Tarefa tarefa) {
-        if (tarefa.isConcluida()) {
-            throw new RuntimeException("Esta tarefa ja esta concluida");
-        }
+    public Usuario validarEmailLogin(String email) {
+        return usuarioRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new EmailNotFoundException("Email não cadastrado: " + email));
     }
 
     public void validarSenhaAtual(String senhaAtual, String senhaCodificada){
@@ -152,6 +99,59 @@ public class EntidadeValidator {
 
         return usuarios;
     }
+
+
+    public void atualizarUsuario(Usuario usuario, DadosAtualizaUsuario dados) {
+
+        if (dados.nome() != null && !dados.nome().isBlank() && !dados.nome().equals(usuario.getNome())) {
+            validarNomeUsuarioExistente(dados.nome());
+            usuario.setNome(dados.nome());
+        }
+
+        if (dados.email() != null && !dados.email().isBlank() && !dados.email().equals(usuario.getEmail())) {
+            validarEmailDuplicado(dados.email());
+            usuario.setEmail(dados.email());
+        }
+    }
+
+    public Categoria validarCategoria(Long categoriaId) {
+        if (categoriaId == null) {
+            return null;
+        }
+        return categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new CategoriaNotFoundException("ID " + categoriaId));
+    }
+
+    public Categoria validarCategoriaDoUsuario(Long categoriaId, Long usuarioId) {
+        if (categoriaId == null) {
+            return null;
+        }
+        return categoriaRepository.findByIdAndUsuarioIdAndAtivoTrue(categoriaId, usuarioId)
+                .orElseThrow(() -> new CategoriaNotFoundException("Categoria ID " + categoriaId +
+                        "Não encontrada ou não pertence ao usuário de ID: " + usuarioId));
+    }
+
+    public void validarNomeCategoriaDuplicado(String nome, Long usuarioId) {
+        if (categoriaRepository.existsByNomeAndUsuarioIdAndAtivoTrue(nome, usuarioId)) {
+            throw new CategoriaNameDuplicateException("Já existe uma categoria com este nome para este usuário");
+        }
+    }
+
+    public Tarefa validarTarefa(Long tarefaId) {
+        return tarefaRepository.findByIdAndAtivoTrue(tarefaId)
+                .orElseThrow(() -> new TarefaNotFoundException("Tarefa com ID " + tarefaId + " não encontrada"));
+    }
+
+    public Status validarStatus(Long statusId) {
+        return statusRepository.findById(statusId)
+                .orElseThrow(() -> new StatusNotFoundException("Status com o nome de: " + statusId + " não encontarado"));
+    }
+
+    public Prioridade validarPrioridade(Long prioridadeId) {
+        return prioridadeRepository.findById(prioridadeId)
+                .orElseThrow(() -> new PrioridadeNotFoundException("Prioridade com o nome de: " + prioridadeId + " não encontrado"));
+    }
+
 
 }
 
