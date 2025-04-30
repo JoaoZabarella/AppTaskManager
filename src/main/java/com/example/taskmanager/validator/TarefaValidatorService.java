@@ -77,7 +77,7 @@ public class TarefaValidatorService {
         if (dados.statusId() != null) {
             Long statusAtualId = tarefa.getStatus() != null ? tarefa.getStatus().getId() : null;
             if (!dados.statusId().equals(statusAtualId)) {
-                tarefa.setStatus(validator.validarStatus(dados.id()));
+                tarefa.setStatus(validator.validarStatus(dados.statusId()));
                 camposAtualizados.add("status");
             }
         }
@@ -93,7 +93,7 @@ public class TarefaValidatorService {
         if(dados.categoriaId() != null){
             Long categoriaAtualId = tarefa.getCategoria() != null ? tarefa.getCategoria().getId() : null;
             if(!dados.categoriaId().equals(categoriaAtualId)){
-                tarefa.setCategoria(validator.validarCategoria(categoriaAtualId));
+                tarefa.setCategoria(validator.validarCategoria(dados.categoriaId()));
                 camposAtualizados.add("categoria");
             }
         }

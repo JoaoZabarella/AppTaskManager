@@ -80,9 +80,15 @@ public class EntidadeValidator {
         }
     }
 
-    public void validarUsuarioAdmin(Usuario usuario) {
+    public void validarUsuarioNaoAdmin(Usuario usuario) {
         if(usuario.getRoles().contains("ROLE_ADMIN")){
             throw new RuntimeException("Este usuario já é admin");
+        }
+    }
+
+    public void validarUsuarioEhAdmin(Usuario usuario){
+        if(usuario.getRoles().contains("ROLE_ADMIN")){
+            throw new RuntimeException("Este usuário não é Admin");
         }
     }
 

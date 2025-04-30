@@ -38,4 +38,10 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
             @Param("prioridadeId") Long prioridadeId,
             @Param("categoriaId") Long categoriaId,
             Pageable pageable);
+
+
+    @Query("SELECT t FROM Tarefa t WHERE t.usuario.id = :usuarioId AND t.ativo = true AND " +
+            "(UPPER(t.titulo) LIKE UPPER(CONCAT('%', :termo, '%')) OR UPPER(t.descricao) LIKE UPPER(CONCAT('%', :termo, '%')))")
+    Page<Tarefa> buscarPorPalavraChave(@Param("usuarioId") Long usuarioId, @Param("termo") String termo, Pageable pageable);
+
 }
