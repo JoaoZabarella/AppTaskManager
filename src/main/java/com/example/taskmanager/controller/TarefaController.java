@@ -61,6 +61,14 @@ public class TarefaController {
         return tarefaService.filtrarTarefasPorStatusPrioridadeCategoria(filtro, pageable);
     }
 
+    @GetMapping("/filtrar/palavra")
+    public ResponseEntity<PaginadoTarefaDTO> filtrarTarefaPalavra(
+            @RequestParam(required = false) String palavraChave,
+            @PageableDefault(size = 10, sort = "dataCriacao", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        return tarefaService.buscarTarefasPorPalavraChave(palavraChave, pageable);
+    }
+
     @DeleteMapping("/{tarefaId}")
     public ResponseEntity<Void> arquivarTarefa(@PathVariable Long tarefaId) {
         tarefaService.arquivarTarefa(tarefaId);

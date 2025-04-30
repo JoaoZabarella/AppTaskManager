@@ -1,6 +1,7 @@
 package com.example.taskmanager.config.exception;
 
 import com.example.taskmanager.config.exception.classes.auth.CredenciaisInvalidasException;
+import com.example.taskmanager.config.exception.classes.auth.InactivatedUserException;
 import com.example.taskmanager.config.exception.classes.auth.UsuarioNaoAutenticadoException;
 import com.example.taskmanager.config.exception.classes.categoria.CategoriaNameDuplicateException;
 import com.example.taskmanager.config.exception.classes.categoria.CategoriaNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import javax.management.ListenerNotFoundException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -170,6 +172,26 @@ public class GlobalExceptionHandler {
         details.put("motivo", "O email ou a senha estão incorretos");
         details.put("solucao", "Verifique suas credenciais e tente novamente");
         return createErrorResponse("Erro de autenticação", details, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(InactivatedUserException.class)
+    public ResponseEntity<ErroResponse> handleInactivatedUserException(InactivatedUserException ex) {
+        log.error("Usuario para logar Inativo : {}", ex.getMessage(), ex);
+        Map<String, Object> details = new HashMap<>();
+        details.put("motivo", "Este usuário está ja criou uma conta porém esta inativo");
+        details.put("solucao", "Entre em contato com o suporte para que possamos reativar a conta novamente ou exclui-la");
+        return createErrorResponse("Erro de autenticação", details, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(OperacaoInvalidaException.class)
+    public ResponseEntity<Object> handleOperacaoInvalidaException(OperacaoInvalidaException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Operação Inválida");
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -1,7 +1,10 @@
 package com.example.taskmanager.service;
 
+import com.example.taskmanager.config.exception.classes.usuario.OperacaoInvalidaException;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.dto.usuario.PaginaUsuarioDTO;
+import com.example.taskmanager.mapper.UsuarioMapper;
+import com.example.taskmanager.model.Usuario;
 import com.example.taskmanager.repository.UsuarioRepository;
 import com.example.taskmanager.repository.annotation.AdminOnly;
 import com.example.taskmanager.validator.EntidadeValidator;
@@ -30,12 +33,42 @@ public class AdminService {
     public ResponseEntity<DadosListagemUsuarioDTO> promoverParaAdmin(Long usuarioId){
         logger.info("Promovendo usuário com ID: {}", usuarioId);
         var usuario = validator.validarUsuario(usuarioId);
-        validator.validarUsuarioAdmin(usuario);
+        validator.validarUsuarioNaoAdmin(usuario);
 
         usuario.adicionarRole("ROLE_ADMIN");
         repository.save(usuario);
         return ResponseEntity.ok(new DadosListagemUsuarioDTO(usuario));
     }
+
+    @Transactional
+    @AdminOnly
+    public ResponseEntity<DadosListagemUsuarioDTO> removerAdmin(Long usuarioId) {
+        logger.info("Solicitação para remover privilégio de admin do usuário com ID: {}", usuarioId);
+
+
+        var usuario = validator.validarUsuario(usuarioId);
+
+
+        if (!usuario.getRoles().contains("ROLE_ADMIN")) {
+            logger.warn("Tentativa de remover privilégio admin de usuário que não é admin. ID: {}", usuarioId);
+            throw new OperacaoInvalidaException("Operação inválida: este usuário não possui privilégios de administrador.");
+        }
+
+        if (isUltimoAdmin(usuario)) {
+            logger.warn("Tentativa de remover o último administrador do sistema. ID: {}", usuarioId);
+            throw new OperacaoInvalidaException("Operação inválida: não é possível remover o último administrador do sistema.");
+        }
+
+
+        usuario.removerRole("ROLE_ADMIN");
+        repository.save(usuario);
+
+        logger.info("Privilégio de admin removido com sucesso do usuário com ID: {}", usuarioId);
+        return ResponseEntity.ok(new DadosListagemUsuarioDTO(usuario));
+    }
+
+
+
 
     @Transactional
     @AdminOnly
@@ -72,5 +105,12 @@ public class AdminService {
         logger.info("Tirando o privilégio de admin do usuario com ID {}", usuarioId);
         var usuario = validator.validarUsuarioInativado(usuarioId);
         usuario.removerRole("");
+    }
+
+
+    //Método auxiliar
+    private boolean isUltimoAdmin(Usuario usuario) {
+        long adminCount = repository.countByRolesContaining("ROLE_ADMIN");
+        return adminCount <= 1 && usuario.getRoles().contains("ROLE_ADMIN");
     }
 }

@@ -60,9 +60,11 @@ public class TarefaService {
     @Transactional
     public ResponseEntity<DadosAtualizacaoTarefaResposta> atualizarTarefa(Long tarefaId, DadosAtualizaTarefa dados) {
         var tarefa = validatorService.validadosObterTarefaDoUsuario(tarefaId, obterUsuario());
+
+        DadosAtualizacaoTarefaResposta resposta = validatorService.atualizacaoTarefaComDados(tarefa, dados);
         tarefaRepository.save(tarefa);
 
-        return ResponseEntity.ok(validatorService.atualizacaoTarefaComDados(tarefa, dados));
+        return ResponseEntity.ok(resposta);
     }
     @Transactional
     public ResponseEntity<DadosListagemTarefa> concluirTarefa(Long tarefaId) {
@@ -116,6 +118,23 @@ public class TarefaService {
         long endTime = System.currentTimeMillis();
         logger.info("Filtragem concluída em {} ms. Encontradas {} tarefas.",
                 (endTime - startTime), resultado.getTotalElements());
+        return ResponseEntity.ok(PaginadoTarefaDTO.from(resultado));
+    }
+
+    public ResponseEntity<PaginadoTarefaDTO> buscarTarefasPorPalavraChave(String palavraChave, Pageable pageable) {
+        if(palavraChave == null || palavraChave.trim().isEmpty()){
+            logger.info("Busca com palavra-chave vazia, retornando todas as tarefas ativas");
+            return listarTarefasAtivas(pageable);
+        }
+
+        logger.info("Buscando tarefas com palavra chave '{}' para usuario de ID {}", palavraChave, obterUsuario());
+
+        Page<Tarefa> tarefasEncontradas = tarefaRepository.buscarPorPalavraChave(
+                obterUsuario(), palavraChave, pageable);
+
+        Page<DadosListagemTarefa> resultado = tarefasEncontradas.map(DadosListagemTarefa::new);
+
+        logger.info("Encontradas {} tarefas contendo a palavra-chave '{}'", resultado.getTotalElements(), palavraChave);
         return ResponseEntity.ok(PaginadoTarefaDTO.from(resultado));
     }
 

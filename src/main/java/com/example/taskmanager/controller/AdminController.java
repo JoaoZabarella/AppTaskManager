@@ -19,9 +19,14 @@ public class AdminController {
     }
 
 
-    @PostMapping("/usuarios/{id}/promover")
+    @PostMapping("/usuarios/promover/{id}")
     public ResponseEntity<DadosListagemUsuarioDTO> promoverParaAdmin(@PathVariable Long id) {
         return service.promoverParaAdmin(id);
+    }
+
+    @PutMapping("/usuarios/remover/{id}")
+    public ResponseEntity<DadosListagemUsuarioDTO> removerParaAdmin(@PathVariable Long id) {
+        return service.removerAdmin(id);
     }
 
     @DeleteMapping("/usuarios/{id}")
@@ -36,7 +41,7 @@ public class AdminController {
         return ResponseEntity.ok(service.buscarUsuariosPorNoemOuEmail(filtro, pageable));
     }
 
-    @PutMapping("/usuarios/{id}/ativar")
+    @PutMapping("/usuarios/ativar/{id}")
     public ResponseEntity<Void> ativarUsuario(@PathVariable Long id) {
         service.reativarUsuario(id);
         return ResponseEntity.ok().build();
