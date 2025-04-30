@@ -6,7 +6,8 @@ public record DadosAtualizaTarefa (
         Long id,
         String titulo,
         String descricao,
-        String statusTexto,
-        String prioridadeTexto,
-        LocalDateTime prazo
+        Long statusId,
+        Long prioridadeId,
+        LocalDateTime prazo,
+        Long categoriaId
 ){}

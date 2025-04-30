@@ -4,8 +4,9 @@ import java.time.LocalDateTime;
 
 public record DadosCriarTarefa (String titulo,
                                 String descricao,
-                                String statusTexto,
-                                String prioridadeTexto,
-                                LocalDateTime prazo
+                                Long statusId,
+                                Long prioridadeId,
+                                LocalDateTime prazo,
+                                Long categoriaId
                                 ) {
 }

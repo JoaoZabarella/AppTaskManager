@@ -1,20 +1,18 @@
 package com.example.taskmanager.validator;
 
+import com.example.taskmanager.config.exception.classes.tarefa.ListTaskEmptyException;
 import com.example.taskmanager.config.exception.classes.tarefa.TarefaNotFoundException;
 import com.example.taskmanager.dto.tarefa.DadosAtualizaTarefa;
 import com.example.taskmanager.dto.tarefa.DadosAtualizacaoTarefaResposta;
 import com.example.taskmanager.dto.tarefa.DadosListagemTarefa;
-import com.example.taskmanager.model.*;
-import com.example.taskmanager.repository.PrioridadeRepository;
-import com.example.taskmanager.repository.StatusRepository;
+import com.example.taskmanager.model.Status;
+import com.example.taskmanager.model.Tarefa;
 import com.example.taskmanager.repository.TarefaRepository;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TarefaValidatorService {
@@ -29,7 +27,7 @@ public class TarefaValidatorService {
     }
 
     public Tarefa validaEObterTarefa(Long tarefaId, Long usuarioId) {
-        return validator.validarTarefa(tarefaId, usuarioId);
+        return validator.validarTarefa(tarefaId);
     }
 
     public Tarefa validadosObterTarefaDoUsuario(Long tarefaId, Long usuarioId) {
@@ -38,7 +36,7 @@ public class TarefaValidatorService {
 
     }
 
-    public Status validadorObterStatus(String status) {
+    public Status validadorObterStatus(Long status) {
         return validator.validarStatus(status);
     }
 
@@ -76,19 +74,27 @@ public class TarefaValidatorService {
             camposAtualizados.add("descrição");
         }
 
-        if (dados.statusTexto() != null) {
-            String statusAtual = tarefa.getStatus() != null ? tarefa.getStatus().getTexto() : null;
-            if (!dados.statusTexto().equals(statusAtual)) {
-                tarefa.setStatus(validator.validarStatus(dados.statusTexto()));
+        if (dados.statusId() != null) {
+            Long statusAtualId = tarefa.getStatus() != null ? tarefa.getStatus().getId() : null;
+            if (!dados.statusId().equals(statusAtualId)) {
+                tarefa.setStatus(validator.validarStatus(dados.id()));
                 camposAtualizados.add("status");
             }
         }
 
-        if (dados.prioridadeTexto() != null) {
-            String prioridadeAtual = tarefa.getPrioridade() != null ? tarefa.getPrioridade().getTexto() : null;
-            if (!dados.prioridadeTexto().equals(prioridadeAtual)) {
-                tarefa.setPrioridade(validator.validarPrioridade(dados.prioridadeTexto()));
+        if (dados.prioridadeId() != null) {
+            Long prioridadeAtualId = tarefa.getPrioridade() != null ? tarefa.getPrioridade().getId() : null;
+            if (!dados.prioridadeId().equals(prioridadeAtualId)) {
+                tarefa.setPrioridade(validator.validarPrioridade(dados.prioridadeId()));
                 camposAtualizados.add("prioridade");
+            }
+        }
+
+        if(dados.categoriaId() != null){
+            Long categoriaAtualId = tarefa.getCategoria() != null ? tarefa.getCategoria().getId() : null;
+            if(!dados.categoriaId().equals(categoriaAtualId)){
+                tarefa.setCategoria(validator.validarCategoria(categoriaAtualId));
+                camposAtualizados.add("categoria");
             }
         }
 
@@ -97,6 +103,8 @@ public class TarefaValidatorService {
             camposAtualizados.add("prazo");
         }
 
+
+
         return camposAtualizados;
     }
     public void validarTarefaNaoConcluida(Tarefa tarefa) {
@@ -104,4 +112,15 @@ public class TarefaValidatorService {
             throw new RuntimeException("Esta tarefa já está concluída");
         }
     }
+
+    public List<Long> verificarTarefas(List<Long> tarefasId){
+        if(tarefasId == null || tarefasId.isEmpty()){
+            throw new ListTaskEmptyException("A lista de tarefas não pode estar vazia");
+        }
+        return tarefasId.stream()
+                .filter(id -> id != null && id > 0)
+                .collect(Collectors.toList());
+    }
+
+
 }
