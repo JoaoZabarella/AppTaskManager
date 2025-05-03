@@ -1,13 +1,17 @@
 package com.example.taskmanager.mapper;
 
 import com.example.taskmanager.dto.tarefa.DadosCriarTarefa;
+import com.example.taskmanager.dto.tarefa.DadosListagemTarefa;
 import com.example.taskmanager.dto.tarefa.FiltrosStatusPrioridadeCategoriaDTO;
 import com.example.taskmanager.model.*;
 import com.example.taskmanager.service.UsuarioAutenticadoService;
 import com.example.taskmanager.validator.EntidadeValidator;
+import com.example.taskmanager.validator.TarefaValidatorService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Component
@@ -49,4 +53,29 @@ public class TarefaMapper {
                 filtro.categoriaId() == null;
     }
 
+    public Tarefa prepararTarefaParaReabertura(Tarefa tarefa, Status statusEmAndamento){
+        tarefa.setStatus(statusEmAndamento);
+        tarefa.reabrir();
+        return tarefa;
+    }
+
+    public List<Tarefa> filtrarTarefasParaReabrir(List<Tarefa> tarefas, Status statusEmAndamento, TarefaValidatorService service){
+        List<Tarefa> tarefasParaReabrir = new ArrayList<>();
+
+        for(Tarefa tarefa : tarefas){
+            if(service.isTarefaConcluida(tarefa)){
+                prepararTarefaParaReabertura(tarefa, statusEmAndamento);
+                tarefasParaReabrir.add(tarefa);
+            }
+        }
+
+        return tarefasParaReabrir;
+    }
+
+
+    public List<DadosListagemTarefa> converterParaDTOs(List<Tarefa> tarefas){
+        return tarefas.stream()
+                .map(DadosListagemTarefa::new)
+                .toList();
+    }
 }

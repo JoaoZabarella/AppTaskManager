@@ -16,7 +16,9 @@ public record DadosListagemTarefa(
         LocalDateTime dataConclusao,
         String usuarioNome,
         Long categoriaId,
-        String categoriaNome
+        String categoriaNome,
+        String concluida
+
 ) {
     public DadosListagemTarefa(Tarefa tarefa) {
         this(
@@ -29,10 +31,11 @@ public record DadosListagemTarefa(
                 tarefa.getPrioridade() != null ? tarefa.getPrioridade().getTexto() : "Sem prioridade",
                 tarefa.getDataCriacao(),
                 tarefa.getPrazo(),
-                tarefa.getDataConclusao(),
+                tarefa.getDataConclusao() ,
                 tarefa.getUsuario() != null ? tarefa.getUsuario().getNome() : "Usuário desconhecido",
                 tarefa.getCategoria() != null ? tarefa.getCategoria().getId() : null,
-                tarefa.getCategoria() != null ? tarefa.getCategoria().getNome() : "Sem categoria"
+                tarefa.getCategoria() != null ? tarefa.getCategoria().getNome() : "Sem categoria",
+                tarefa.isConcluida() ? "Tarefa concluida" : "Tarefa em aberto"
         );
     }
 }

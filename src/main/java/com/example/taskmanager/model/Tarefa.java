@@ -90,4 +90,8 @@ public class Tarefa {
         this.ativo = false;
     }
 
+    public void reabrir(){
+        this.dataConclusao = null;
+    }
+
 }

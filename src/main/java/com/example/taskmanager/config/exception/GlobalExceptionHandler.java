@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
         log.error("Tarefa não encontrada: {}", ex.getMessage(), ex);
         Map<String, Object> details = new HashMap<>();
         details.put("motivo", "Esta tarefa não foi localizada");
-        details.put("solucao", "Tente buscar outra tarefa");
+        details.put("solucao", "A tarefa pode estar arquivada, tente buscar outra tarefa");
         return createErrorResponse("Tarefa não encontrada", details, HttpStatus.NOT_FOUND);
     }
 
