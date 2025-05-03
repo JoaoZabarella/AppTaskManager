@@ -63,7 +63,7 @@ public class UsuarioService {
     }
 
     public ResponseEntity<DadosListagemUsuarioDTO> buscarUsuarioLogado() {
-        logger.info("Retornando os dados do usuaário de ID {}", obterUsuario());
+        logger.info("Retornando os dados do usuário de ID {}", obterUsuario());
 
         DadosListagemUsuarioDTO dadosUsuario = new DadosListagemUsuarioDTO(getUsuarioLogado());
         return ResponseEntity.ok(dadosUsuario);
