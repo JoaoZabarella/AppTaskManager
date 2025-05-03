@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,12 +27,16 @@ public class TarefaService {
     private final TarefaMapper mapper;
     private final TarefaValidatorService validatorService;
     private final UsuarioAutenticadoService usuarioAutenticadoService;
+    private final EntidadeValidator validator;
 
-    public TarefaService(TarefaRepository tarefaRepository, TarefaMapper mapper, TarefaValidatorService validatorService, UsuarioAutenticadoService usuarioAutenticadoService) {
+
+    public TarefaService(TarefaRepository tarefaRepository, TarefaMapper mapper, TarefaValidatorService validatorService, UsuarioAutenticadoService usuarioAutenticadoService, TarefaValidatorService tarefaValidator, EntidadeValidator validator) {
         this.tarefaRepository = tarefaRepository;
         this.mapper = mapper;
         this.validatorService = validatorService;
         this.usuarioAutenticadoService = usuarioAutenticadoService;
+
+        this.validator = validator;
     }
 
     private Long obterUsuario() {
@@ -61,24 +66,14 @@ public class TarefaService {
     public ResponseEntity<DadosAtualizacaoTarefaResposta> atualizarTarefa(Long tarefaId, DadosAtualizaTarefa dados) {
         var tarefa = validatorService.validadosObterTarefaDoUsuario(tarefaId, obterUsuario());
 
+        validatorService.validarTarefaPodeSerEditada(tarefa);
+
         DadosAtualizacaoTarefaResposta resposta = validatorService.atualizacaoTarefaComDados(tarefa, dados);
         tarefaRepository.save(tarefa);
 
         return ResponseEntity.ok(resposta);
     }
-    @Transactional
-    public ResponseEntity<DadosListagemTarefa> concluirTarefa(Long tarefaId) {
-        var tarefa = validatorService.validaEObterTarefa(tarefaId, obterUsuario());
-        Status statusConcluido = validatorService.validadorObterStatus(3L);
 
-        tarefa.setStatus(statusConcluido);
-        tarefa.concluir();
-
-        tarefaRepository.save(tarefa);
-
-
-        return ResponseEntity.ok(new DadosListagemTarefa(tarefa));
-    }
 
 
     //Métodos de GET
@@ -176,7 +171,7 @@ public class TarefaService {
 
             List<Long> tarefasNaoEncontradas = tarefasIds.stream()
                     .filter(id -> !tarefasEncotradas.contains(id))
-                    .collect(Collectors.toList());
+                    .toList();
 
             logger.warn("Algumas tarefas não foram encontaradas para arquivar ou não pertencem ao usuário: {}", tarefasEncotradas);
         }
@@ -205,7 +200,7 @@ public class TarefaService {
         if(tarefas.size() != tarefasIds.size()){
             List<Long> tarefasEncontradas = tarefas.stream()
                     .map(Tarefa::getId)
-                    .collect(Collectors.toList());
+                    .toList();
 
             List<Long> tarefasNaoEncontradas = tarefasIds.stream()
                     .filter(id -> !tarefasEncontradas.contains(id))
@@ -218,7 +213,114 @@ public class TarefaService {
         logger.info("{} tarefas excluidas com sucesso", tarefas.size());
     }
 
+    //CONCLUIR
+    @Transactional
+    public ResponseEntity<DadosListagemTarefa> concluirTarefa(Long tarefaId) {
+        logger.info("Concluindo tarefa com ID {} para o usuário {}", tarefaId, obterUsuario());
+
+        var tarefa = validatorService.validaEObterTarefa(tarefaId, obterUsuario());
 
 
+        if (validatorService.isTarefaConcluida(tarefa)) {
+            logger.info("Tarefa {} já está concluída", tarefaId);
+            return ResponseEntity.ok(new DadosListagemTarefa(tarefa));
+        }
+
+        validator.validarTarefa(tarefaId);
+
+        Status statusConcluido = validatorService.validadorObterStatus(3L);
+
+        tarefa.setStatus(statusConcluido);
+        tarefa.concluir();
+
+        tarefaRepository.save(tarefa);
+
+        logger.info("Tarefa {} concluída com sucesso", tarefaId);
+        return ResponseEntity.ok(new DadosListagemTarefa(tarefa));
+    }
+
+
+    @Transactional
+    public ResponseEntity<List<DadosListagemTarefa>> concluirMultiplasTarefas(List<Long> tarefasIds){
+        logger.info("Concluindo {} tarefas em lote para o usuario {}", tarefasIds.size(), obterUsuario());
+
+        validatorService.verificarTarefas(tarefasIds);
+
+        List<Tarefa> tarefas = tarefaRepository.findAllByIdsAndUsuarioIdAndAtivoTrue(tarefasIds, obterUsuario());
+
+        if(tarefas.isEmpty()){
+            logger.warn("Nenhuma tarefa encontrada para concluir");
+            return ResponseEntity.noContent().build();
+        }
+
+        Status statusConcluido = validatorService.validadorObterStatus(3L);
+        List<Tarefa> tarefasParaConcluir = new ArrayList<>();
+
+        for(Tarefa tarefa : tarefas){
+            if(!tarefa.isConcluida()){
+                tarefa.setStatus(statusConcluido);
+                tarefa.concluir();
+                tarefasParaConcluir.add(tarefa);
+            }
+        }
+
+        if(!tarefasParaConcluir.isEmpty()){
+            tarefaRepository.saveAll(tarefasParaConcluir);
+        }
+
+        List<DadosListagemTarefa> tarefasConcluidas = tarefas.stream()
+                .map(DadosListagemTarefa::new)
+                .toList();
+
+        logger.info("{} tarefas concluidas com sucesso", tarefasConcluidas.size());
+        return ResponseEntity.ok(tarefasConcluidas);
+    }
+
+    //REABRIR
+    @Transactional
+    public ResponseEntity<DadosListagemTarefa> reabrirTarefa(Long tarefaId){
+        logger.info("Reabrindo tarefa com ID {} para o usuario {}", tarefaId, obterUsuario());
+
+        var tarefa = validatorService.validaEObterTarefa(tarefaId, obterUsuario());
+
+        if(!validatorService.isTarefaConcluida(tarefa)){
+            logger.info("Tarefa {}, ja está aberta", tarefaId);
+            return ResponseEntity.ok(new DadosListagemTarefa(tarefa));
+        }
+
+        validator.validarTarefa(tarefaId);
+
+        Status statusEmAndamento = validatorService.validadorObterStatus(2L);
+        mapper.prepararTarefaParaReabertura(tarefa, statusEmAndamento);
+        tarefaRepository.save(tarefa);
+
+        logger.info("Tarefa {} reaberta com sucesso", tarefaId);
+        return ResponseEntity.ok(new DadosListagemTarefa(tarefa));
+    }
+
+    @Transactional
+    public ResponseEntity<List<DadosListagemTarefa>> reabrirMultiplasTarefas(List<Long> tarefasIds){
+        logger.info("Reabrindo {} tarefas em lote para o usuario {}", tarefasIds.size(), obterUsuario());
+
+        validatorService.verificarTarefas(tarefasIds);
+
+        List<Tarefa> tarefas = tarefaRepository.findAllByIdsAndUsuarioIdAndAtivoTrue(tarefasIds, obterUsuario());
+
+        if(tarefas.isEmpty()){
+            logger.warn("Nenhuma tarefa encontrada para reabrir");
+            return ResponseEntity.noContent().build();
+        }
+
+        Status statusEmAdamento = validatorService.validadorObterStatus(2L);
+        List<Tarefa> tarefasReabertas = mapper.filtrarTarefasParaReabrir(tarefas, statusEmAdamento, validatorService);
+
+        if(!tarefasReabertas.isEmpty()){
+            tarefaRepository.saveAll(tarefasReabertas);
+        }
+        List<DadosListagemTarefa> resultado = mapper.converterParaDTOs(tarefas);
+
+        logger.info("{} tarefas reabertas com sucesso", tarefasReabertas.size());
+        return ResponseEntity.ok(resultado);
+    }
 }
 

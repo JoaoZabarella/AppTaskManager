@@ -3,7 +3,6 @@ package com.example.taskmanager.controller;
 import com.example.taskmanager.dto.tarefa.*;
 import com.example.taskmanager.service.TarefaService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -44,12 +43,6 @@ public class TarefaController {
         return tarefaService.atualizarTarefa(tarefaId, dados);
     }
 
-    @PutMapping("/{id}/concluir")
-    public ResponseEntity<DadosListagemTarefa> concluirTarefa(@PathVariable Long id) {
-        return tarefaService.concluirTarefa(id);
-    }
-
-
     @GetMapping("/filtrar")
     public ResponseEntity<PaginadoTarefaDTO> filtrarTarefa(@RequestParam(required = false) Long statusId,
                                                            @RequestParam(required = false) Long prioridadeId,
@@ -69,7 +62,7 @@ public class TarefaController {
         return tarefaService.buscarTarefasPorPalavraChave(palavraChave, pageable);
     }
 
-    @DeleteMapping("/{tarefaId}")
+    @DeleteMapping("/arquivar/{tarefaId}")
     public ResponseEntity<Void> arquivarTarefa(@PathVariable Long tarefaId) {
         tarefaService.arquivarTarefa(tarefaId);
         return ResponseEntity.noContent().build();
@@ -92,5 +85,24 @@ public class TarefaController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/concluir")
+    public ResponseEntity<List<DadosListagemTarefa>> concluirMultiplasTarefas(@RequestBody ArquivarMultiplasTarefasDTO dados){
+            return tarefaService.concluirMultiplasTarefas(dados.tarefasId());
+    }
+
+    @PatchMapping("/concluir/{id}")
+    public ResponseEntity<DadosListagemTarefa> concluirTarefa(@PathVariable Long id) {
+        return tarefaService.concluirTarefa(id);
+    }
+
+    @PatchMapping("/reabrir/{id}")
+    public ResponseEntity<DadosListagemTarefa> reabrirTarefa(@PathVariable Long id) {
+        return tarefaService.reabrirTarefa(id);
+    }
+
+    @PatchMapping("/reabrir")
+    public ResponseEntity<List<DadosListagemTarefa>> reabrirMultiplasTarefas(@RequestBody ArquivarMultiplasTarefasDTO dados){
+        return tarefaService.reabrirMultiplasTarefas(dados.tarefasId());
+    }
 
 }

@@ -1,14 +1,18 @@
 package com.example.taskmanager.service;
 
 import com.example.taskmanager.config.security.RoleConst;
+import com.example.taskmanager.dto.tarefa.DadosListagemTarefa;
 import com.example.taskmanager.dto.usuario.AlterarSenhaDTO;
 import com.example.taskmanager.dto.usuario.DadosAtualizaUsuario;
 import com.example.taskmanager.dto.usuario.DadosCadastroUsuario;
 import com.example.taskmanager.dto.usuario.DadosListagemUsuarioDTO;
 import com.example.taskmanager.mapper.UsuarioMapper;
+import com.example.taskmanager.model.Status;
 import com.example.taskmanager.model.Usuario;
+import com.example.taskmanager.repository.TarefaRepository;
 import com.example.taskmanager.repository.UsuarioRepository;
 import com.example.taskmanager.validator.EntidadeValidator;
+import com.example.taskmanager.validator.TarefaValidatorService;
 import jakarta.transaction.Transactional;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +31,7 @@ public class UsuarioService {
     private final EntidadeValidator validator;
     private final PasswordEncoder passwordEncoder;
     private final UsuarioAutenticadoService usuarioAutenticadoService;
+
 
 
     private Usuario getUsuarioLogado(){
@@ -102,8 +107,9 @@ public class UsuarioService {
         getUsuarioLogado().setSenha(senhaCodificada);
         usuarioRepository.save(getUsuarioLogado());
         return ResponseEntity.noContent().build();
-
     }
+
+
 
 
 

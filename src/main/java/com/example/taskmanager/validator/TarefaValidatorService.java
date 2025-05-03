@@ -2,6 +2,7 @@ package com.example.taskmanager.validator;
 
 import com.example.taskmanager.config.exception.classes.tarefa.ListTaskEmptyException;
 import com.example.taskmanager.config.exception.classes.tarefa.TarefaNotFoundException;
+import com.example.taskmanager.config.exception.classes.usuario.OperacaoInvalidaException;
 import com.example.taskmanager.dto.tarefa.DadosAtualizaTarefa;
 import com.example.taskmanager.dto.tarefa.DadosAtualizacaoTarefaResposta;
 import com.example.taskmanager.dto.tarefa.DadosListagemTarefa;
@@ -122,5 +123,20 @@ public class TarefaValidatorService {
                 .collect(Collectors.toList());
     }
 
+    public boolean isTarefaConcluida(Tarefa tarefa){
+        return tarefa.isConcluida();
+    }
+
+    public void validarTarefaPodeSerReaberta(Tarefa tarefa){
+        if(!isTarefaConcluida(tarefa)){
+            throw new OperacaoInvalidaException("Esta tarefa não esta concluida e não pode ser reaberta");
+        }
+    }
+
+    public void validarTarefaPodeSerEditada(Tarefa tarefa){
+        if(!isTarefaConcluida(tarefa)){
+            throw new OperacaoInvalidaException("Esta tarefa está concluida e não pode ser editada, rebra a tarefa primeiro");
+        }
+    }
 
 }
