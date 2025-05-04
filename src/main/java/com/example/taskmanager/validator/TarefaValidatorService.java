@@ -134,7 +134,7 @@ public class TarefaValidatorService {
     }
 
     public void validarTarefaPodeSerEditada(Tarefa tarefa){
-        if(!isTarefaConcluida(tarefa)){
+        if(isTarefaConcluida(tarefa)){
             throw new OperacaoInvalidaException("Esta tarefa está concluida e não pode ser editada, rebra a tarefa primeiro");
         }
     }

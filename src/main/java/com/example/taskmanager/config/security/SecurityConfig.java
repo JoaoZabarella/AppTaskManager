@@ -25,6 +25,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/usuario").permitAll();
+                    req.requestMatchers("/swagger-ui.html").permitAll();
+                    req.requestMatchers("/swagger-ui/**").permitAll();
+                    req.requestMatchers("/api-docs/**").permitAll();
+                    req.requestMatchers("/v3/api-docs/**").permitAll();
                     req.requestMatchers("/admin/**").hasRole("ADMIN");
                     req.anyRequest().authenticated();
                 })
