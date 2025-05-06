@@ -80,7 +80,7 @@ public class UsuarioService {
 
         validator.atualizarUsuario(getUsuarioLogado(), dados);
 
-        logger.info("Usuário com ID: {} atualizado com sucesso", dados.id());
+        logger.info("Usuário com ID: {} atualizado com sucesso", obterUsuario());
         return ResponseEntity.ok(new DadosListagemUsuarioDTO(getUsuarioLogado()));
 
     }
