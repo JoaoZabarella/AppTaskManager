@@ -83,7 +83,7 @@ public class AdminService {
     }
 
     @AdminOnly
-    public PaginaUsuarioDTO buscarUsuariosPorNoemOuEmail(String filtro, Pageable pageable){
+    public PaginaUsuarioDTO buscarUsuariosPorNomeOuEmail(String filtro, Pageable pageable){
         var usuarios = validator.validarBusca(filtro, pageable);
 
         Page<DadosListagemUsuarioDTO> pageConvertida = usuarios.map(DadosListagemUsuarioDTO::new);

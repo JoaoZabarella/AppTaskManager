@@ -57,7 +57,8 @@ public class Usuario implements UserDetails {
         this.ativo = false;
     }
     public void ativar() {
-        this.ativo = true;}
+        this.ativo = true;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -116,4 +117,5 @@ public class Usuario implements UserDetails {
     public boolean isEnabled() {
         return ativo;
     }
+
 }

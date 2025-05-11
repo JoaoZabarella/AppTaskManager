@@ -89,9 +89,9 @@ public class UsuarioService {
     public ResponseEntity<Void> inativar() {
         logger.info("Inativando usuário com ID: {}", obterUsuario());
 
-
-        getUsuarioLogado().desativar();
-        usuarioRepository.save(getUsuarioLogado());
+        var usuario = getUsuarioLogado();
+        usuario.desativar();
+        usuarioRepository.save(usuario);
 
         logger.info("Usuário com ID: {} inativado com sucesso", obterUsuario());
         return ResponseEntity.noContent().build();
