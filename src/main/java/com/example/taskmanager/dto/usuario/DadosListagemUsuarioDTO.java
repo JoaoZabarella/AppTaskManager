@@ -16,11 +16,18 @@ public record DadosListagemUsuarioDTO(
         String email,
         LocalDateTime dataCriacao,
         Boolean ativo,
-        Set<String> roles
+        Set<String> roles,
+        String statusEmoji
 
 
 ) {
     public DadosListagemUsuarioDTO(Usuario usuario){
-        this(usuario.getId(),usuario.getNome(),usuario.getEmail(), usuario.getDataCriacao(), usuario.isAtivo(), usuario.getRoles());
+        this(usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getDataCriacao(),
+                usuario.isAtivo(),
+                usuario.getRoles(),
+                usuario.isAtivo() ? "👍": "👎");
     }
 }
