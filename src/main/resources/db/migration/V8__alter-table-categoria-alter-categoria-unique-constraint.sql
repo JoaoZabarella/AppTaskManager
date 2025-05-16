@@ -1,3 +1,3 @@
-DROP INDEX IF EXISTS nome ON categoria;
+DROP INDEX nome ON categoria;
 
-ALTER TABLE categoria ADD CONSTRAINT uk_nome_usuario UNIQUE (nome, usuario_id);
+ALTER TABLE categoria ADD CONSTRAINT UK_categoria_nome UNIQUE (nome);

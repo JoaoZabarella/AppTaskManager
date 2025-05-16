@@ -9,10 +9,13 @@ services:
       mysql:
         condition: service_healthy
     environment:
+      - SPRING_PROFILES_ACTIVE=development
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
       - SPRING_DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
       - API_SECURITY_TOKEN_SECRET=${API_SECURITY_TOKEN_SECRET}
+    volumes:
+      - ./logs:/app/logs
 
   mysql:
     image: mysql:8.0
