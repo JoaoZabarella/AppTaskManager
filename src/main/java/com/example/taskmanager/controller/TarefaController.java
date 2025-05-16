@@ -44,6 +44,8 @@ public class TarefaController {
         return tarefaService.criarTarefa(dados, categoriaId, uriBuilder);
     }
 
+
+
     @GetMapping("/paginado")
     @Operation(summary = "Listar tarefas", description = "Lista todas as tarefas ativas do usuário autenticado")
     @ApiResponses(value = {
@@ -54,6 +56,16 @@ public class TarefaController {
             Pageable pageable) {
 
         return tarefaService.listarTarefasAtivas(pageable);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Obter tarefa por ID", description = "Retorna os detalhes de uma tarefa específica")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tarefa encontrada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Tarefa não encontrada")
+    })
+    public ResponseEntity<DadosListagemTarefa> obterTarefaPorId(@PathVariable Long id) {
+        return tarefaService.buscarTarefaPorId(id);
     }
 
     @PutMapping("/{tarefaId}")
@@ -178,5 +190,11 @@ public class TarefaController {
     })
     public ResponseEntity<List<DadosListagemTarefa>> reabrirMultiplasTarefas(@RequestBody ArquivarMultiplasTarefasDTO dados){
         return tarefaService.reabrirMultiplasTarefas(dados.tarefasId());
+    }
+
+    @GetMapping("/estatisticas")
+    @Operation(summary = "Obter estatísticas de tarefas", description = "Retorna estatísticas das tarefas do usuário")
+    public ResponseEntity<TarefaEstatisticaDTO> obterEstatisticas() {
+        return ResponseEntity.ok(tarefaService.obterTarefaEstatistica());
     }
 }

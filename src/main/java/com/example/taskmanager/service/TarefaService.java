@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -322,5 +324,18 @@ public class TarefaService {
         logger.info("{} tarefas reabertas com sucesso", tarefasReabertas.size());
         return ResponseEntity.ok(resultado);
     }
+
+    @Transactional()
+    public TarefaEstatisticaDTO obterTarefaEstatistica(){
+        Long usuario = obterUsuario();
+        return tarefaRepository.obterEstatisticasPorUsuario(usuario);
+    }
+
+
+    public ResponseEntity<DadosListagemTarefa> buscarTarefaPorId(Long id) {
+        Tarefa tarefa = validatorService.validaEObterTarefa(id, obterUsuario());
+        return ResponseEntity.ok(new DadosListagemTarefa(tarefa));
+    }
+
 }
 

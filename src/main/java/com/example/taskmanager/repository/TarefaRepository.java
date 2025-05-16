@@ -1,5 +1,6 @@
 package com.example.taskmanager.repository;
 
+import com.example.taskmanager.dto.tarefa.TarefaEstatisticaDTO;
 import com.example.taskmanager.model.Tarefa;
 import com.example.taskmanager.model.Usuario;
 import org.springframework.data.domain.Page;
@@ -43,5 +44,17 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
     @Query("SELECT t FROM Tarefa t WHERE t.usuario.id = :usuarioId AND t.ativo = true AND " +
             "(UPPER(t.titulo) LIKE UPPER(CONCAT('%', :termo, '%')) OR UPPER(t.descricao) LIKE UPPER(CONCAT('%', :termo, '%')))")
     Page<Tarefa> buscarPorPalavraChave(@Param("usuarioId") Long usuarioId, @Param("termo") String termo, Pageable pageable);
+
+    @Query("""
+    SELECT new com.example.taskmanager.dto.tarefa.TarefaEstatisticaDTO(
+        COUNT(t),
+        SUM(CASE WHEN t.dataConclusao IS NOT NULL THEN 1 ELSE 0 END),
+        SUM(CASE WHEN t.status.id = 2 AND t.dataConclusao IS NULL THEN 1 ELSE 0 END),
+        SUM(CASE WHEN t.prazo IS NOT NULL THEN 1 ELSE 0 END)
+    )
+    FROM Tarefa t
+    WHERE t.usuario.id = :usuarioId AND t.ativo = true
+""")
+    TarefaEstatisticaDTO obterEstatisticasPorUsuario(@Param("usuarioId") Long usuarioId);
 
 }
