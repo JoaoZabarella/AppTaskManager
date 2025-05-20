@@ -29,7 +29,6 @@ public class TarefaMapper {
     public Tarefa prepararTarefa(DadosCriarTarefa dados){
         Usuario usuario = usuarioAutenticadoService.obterUsuarioAutenticado();
 
-
         Categoria categoria = dados.categoriaId() !=null ? validator.validarCategoria(dados.categoriaId()) : null;
         Status status = validator.validarStatus(dados.statusId());
         Prioridade prioridade = validator.validarPrioridade(dados.prioridadeId());
@@ -40,6 +39,9 @@ public class TarefaMapper {
         tarefa.setUsuario(usuario);
         tarefa.setCategoria(categoria);
 
+        if (dados.prazo() != null) {
+            tarefa.setPrazo(dados.prazo());
+        }
         return tarefa;
     }
 

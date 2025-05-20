@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,10 +45,10 @@ public class Tarefa {
 
     @CreationTimestamp
     @Column(name = "data_criacao", updatable = false)
-    private LocalDateTime dataCriacao;
+    private OffsetDateTime dataCriacao;
 
     @Column(name = "data_conclusao")
-    private LocalDateTime dataConclusao;
+    private OffsetDateTime dataConclusao;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -64,7 +65,7 @@ public class Tarefa {
     private Boolean ativo = true;
 
     @Column(name = "prazo")
-    private LocalDateTime prazo;
+    private OffsetDateTime prazo;
 
     public Tarefa() {
         this.ativo = true;
@@ -79,7 +80,7 @@ public class Tarefa {
     }
 
     public void concluir() {
-        this.dataConclusao = LocalDateTime.now();
+        this.dataConclusao = OffsetDateTime.now();
     }
 
     public boolean isConcluida() {
