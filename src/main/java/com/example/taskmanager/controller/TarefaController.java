@@ -52,7 +52,7 @@ public class TarefaController {
             @ApiResponse(responseCode = "200", description = "Tarefas listadas com sucesso")
     })
     public ResponseEntity<PaginadoTarefaDTO> listarTarefasAtivasDoUsuario(
-            @PageableDefault(size = 10, sort = "dataCriacao", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 99, sort = "dataCriacao", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
         return tarefaService.listarTarefasAtivas(pageable);

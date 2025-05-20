@@ -32,6 +32,7 @@ public class TarefaService {
     private final EntidadeValidator validator;
 
 
+
     public TarefaService(TarefaRepository tarefaRepository, TarefaMapper mapper, TarefaValidatorService validatorService, UsuarioAutenticadoService usuarioAutenticadoService, TarefaValidatorService tarefaValidator, EntidadeValidator validator) {
         this.tarefaRepository = tarefaRepository;
         this.mapper = mapper;

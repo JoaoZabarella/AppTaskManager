@@ -2,6 +2,7 @@ package com.example.taskmanager.dto.tarefa;
 
 import com.example.taskmanager.model.*;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public record DadosListagemTarefa(
         Long id,
@@ -11,9 +12,9 @@ public record DadosListagemTarefa(
         String statusTexto,
         Long prioridadeId,
         String prioridadeTexto,
-        LocalDateTime dataCriacao,
-        LocalDateTime prazo,
-        LocalDateTime dataConclusao,
+        OffsetDateTime dataCriacao,
+        OffsetDateTime prazo,
+        OffsetDateTime dataConclusao,
         String usuarioNome,
         Long categoriaId,
         String categoriaNome,

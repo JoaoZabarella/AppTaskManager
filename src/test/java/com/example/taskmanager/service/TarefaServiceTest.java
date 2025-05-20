@@ -22,6 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -94,15 +95,15 @@ class TarefaServiceTest {
         tarefa.setCategoria(categoria);
         tarefa.setUsuario(usuario);
         tarefa.setAtivo(true);
-        tarefa.setDataCriacao(LocalDateTime.now());
-        tarefa.setPrazo(LocalDateTime.now().plusDays(1));
+        tarefa.setDataCriacao(OffsetDateTime.from(OffsetDateTime.now()));
+        tarefa.setPrazo(OffsetDateTime.now().plusDays(1));
 
         dadosCriarTarefa = new DadosCriarTarefa(
                 "Tarefa teste",
                 "Descrição da tarefa teste",
                 2L,
                 1L,
-                LocalDateTime.now().plusDays(1),
+                OffsetDateTime.now().plusDays(1),
                 1L
         );
 
@@ -142,7 +143,7 @@ class TarefaServiceTest {
                 "Descrição atualizada",
                 2L,
                 1L,
-                LocalDateTime.now().plusDays(2),
+                OffsetDateTime.now().plusDays(2),
                 1L
         );
 

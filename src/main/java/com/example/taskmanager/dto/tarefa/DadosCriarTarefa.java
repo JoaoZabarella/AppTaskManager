@@ -1,12 +1,13 @@
 package com.example.taskmanager.dto.tarefa;
 
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
 
 public record DadosCriarTarefa (String titulo,
                                 String descricao,
                                 Long statusId,
                                 Long prioridadeId,
-                                LocalDateTime prazo,
+                                OffsetDateTime prazo,
                                 Long categoriaId
                                 ) {
 }
