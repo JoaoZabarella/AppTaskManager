@@ -18,7 +18,8 @@ public record DadosListagemTarefa(
         String usuarioNome,
         Long categoriaId,
         String categoriaNome,
-        String concluida
+        String concluida,
+        String statusEmoji
 
 ) {
     public DadosListagemTarefa(Tarefa tarefa) {
@@ -36,7 +37,8 @@ public record DadosListagemTarefa(
                 tarefa.getUsuario() != null ? tarefa.getUsuario().getNome() : "Usuário desconhecido",
                 tarefa.getCategoria() != null ? tarefa.getCategoria().getId() : null,
                 tarefa.getCategoria() != null ? tarefa.getCategoria().getNome() : "Sem categoria",
-                tarefa.isConcluida() ? "Tarefa concluida" : "Tarefa em aberto"
+                tarefa.isConcluida() ? "Tarefa concluida" : "Tarefa em aberto",
+                tarefa.isAtivo() ? "👍" : "👎"
         );
     }
 }

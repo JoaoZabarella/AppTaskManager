@@ -61,14 +61,13 @@ public class Tarefa {
     @OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comentario> comentarios = new ArrayList<>();
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private Boolean ativo = true;
+    @Column(name = "ativo", nullable = false)
+    private boolean ativo = true;
 
     @Column(name = "prazo")
     private OffsetDateTime prazo;
 
     public Tarefa() {
-        this.ativo = true;
         this.comentarios = new ArrayList<>();
     }
 
@@ -76,7 +75,6 @@ public class Tarefa {
         this.titulo = dados.titulo();
         this.descricao = dados.descricao();
         this.prazo = dados.prazo();
-        this.ativo = true;
     }
 
     public void concluir() {
@@ -94,5 +92,4 @@ public class Tarefa {
     public void reabrir(){
         this.dataConclusao = null;
     }
-
 }
