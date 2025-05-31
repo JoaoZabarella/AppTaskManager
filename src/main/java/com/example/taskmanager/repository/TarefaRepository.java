@@ -18,6 +18,8 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
     Page<Tarefa> findByUsuarioIdAndAtivoTrue(Long usuarioId, Pageable pageable);
     Optional<Tarefa> findByIdAndAtivoTrue(Long id);
     Optional<Tarefa> findByIdAndUsuarioIdAndAtivoTrue(Long id, Long usuarioId );
+    Page<Tarefa> findByUsuarioIdAndAtivoFalse(Long id, Pageable pageable);
+    Optional<Tarefa> findByIdAndUsuarioId(Long id, Long usuarioId);
 
     @Query("SELECT t from Tarefa t WHERE t.id IN :ids AND t.usuario.id = :usuarioId AND t.ativo = true")
     List<Tarefa> findAllByIdsAndUsuarioIdAndAtivoTrue(@Param("ids") List<Long> ids, @Param("usuarioId") Long usuarioId);

@@ -249,7 +249,7 @@ class TarefaServiceTest {
 
         assertNotNull(response);
         assertEquals(204, response.getStatusCodeValue());
-        assertFalse(tarefa.getAtivo());
+        assertFalse(tarefa.isAtivo());
 
         verify(validatorService).validaEObterTarefa(tarefaId, usuarioId);
         verify(tarefaRepository).save(tarefa);
@@ -265,7 +265,7 @@ class TarefaServiceTest {
 
         tarefaService.arquivarMultiplasTarefas(tarefasIds);
 
-        assertFalse(tarefa.getAtivo());
+        assertFalse(tarefa.isAtivo());
 
         verify(validatorService).verificarTarefas(tarefasIds);
         verify(tarefaRepository).findAllByIdsAndUsuarioIdAndAtivoTrue(tarefasIds, usuarioId);

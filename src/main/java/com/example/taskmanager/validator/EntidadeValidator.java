@@ -158,6 +158,22 @@ public class EntidadeValidator {
                 .orElseThrow(() -> new PrioridadeNotFoundException("Prioridade com o nome de: " + prioridadeId + " não encontrado"));
     }
 
+    public Tarefa validarTarefaDoUsuario(Long tarefaId, Long usuarioId){
+        return tarefaRepository.findByIdAndUsuarioId(tarefaId, usuarioId)
+                .orElseThrow(() -> new TarefaNotFoundException("Tarefa com ID " +tarefaId+  "não ncontrado"));
+    }
+
+    public Tarefa validarTarefaArquivadaDoUsuario(Long tarefaId, Long usuarioId){
+        return tarefaRepository.findByIdAndUsuarioId(tarefaId, usuarioId)
+                .filter(tarefa -> !tarefa.isAtivo())
+                .orElseThrow(() -> new TarefaNotFoundException("Tarefa arquivada com ID " + tarefaId + "Não encontrado"));
+    }
+
+
+
+
+
+
 
 }
 
